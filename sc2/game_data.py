@@ -20,10 +20,11 @@ class GameData:
         """
         :param data:
         """
+        self._proto = data
         ids = set(a.value for a in AbilityId if a.value != 0)
-        self.abilities = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
-        self.units = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
-        self.upgrades = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
+        self.abilities: Dict[int, AbilityData] = {a.ability_id: AbilityData(self, a) for a in data.abilities if a.ability_id in ids}
+        self.units: Dict[int, UnitTypeData] = {u.unit_id: UnitTypeData(self, u) for u in data.units if u.available}
+        self.upgrades: Dict[int, UpgradeData] = {u.upgrade_id: UpgradeData(self, u) for u in data.upgrades}
         # Cached UnitTypeIds so that conversion does not take long. This needs to be moved elsewhere if a new GameData object is created multiple times per game
         self.unit_types: Dict[int, UnitTypeId] = {}
 

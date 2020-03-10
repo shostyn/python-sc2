@@ -638,7 +638,9 @@ class BotAI(DistanceCalculation):
                     return self.calculate_unit_value(UnitTypeId.ARCHON)
             unit_data = self._game_data.units[item_id.value]
             # Cost of structure morphs is automatically correctly calculated by 'calculate_ability_cost'
-            cost = self._game_data.calculate_ability_cost(unit_data.creation_ability)
+            creation_ability: AbilityData = unit_data.creation_ability
+            assert creation_ability is not None, f"{item_id}, {unit_data._proto}"
+            cost = self._game_data.calculate_ability_cost(creation_ability)
             # Fix non-structure morph cost: check if is morph, then subtract the original cost
             unit_supply_cost = unit_data._proto.food_required
             if unit_supply_cost > 0 and item_id in UNIT_TRAINED_FROM and len(UNIT_TRAINED_FROM[item_id]) == 1:
