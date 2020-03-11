@@ -22,7 +22,8 @@ from .constants import (
     EQUIVALENTS_FOR_TECH_PROGRESS,
     TERRAN_STRUCTURES_REQUIRE_SCV,
 )
-from .data import ActionResult, Alert, Race, Result, Target, race_gas, race_townhalls, race_worker
+from .data import ActionResult, Alert, Race, Result, Target
+from .constants import race_gas, race_townhalls, race_worker
 from .distances import DistanceCalculation
 from .game_data import AbilityData, GameData
 

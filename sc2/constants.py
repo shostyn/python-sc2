@@ -1,4 +1,4 @@
-from .data import Alliance, Attribute, CloakState, DisplayType, TargetType
+from .data import Alliance, Attribute, CloakState, DisplayType, TargetType, Race
 from .ids.ability_id import *
 from .ids.buff_id import *
 from .ids.effect_id import *
@@ -24,6 +24,7 @@ mineral_ids: Set[int] = {
     MINERALFIELDOPAQUE.value,
     MINERALFIELDOPAQUE900.value,
 }
+
 geyser_ids: Set[int] = {
     VESPENEGEYSER.value,
     SPACEPLATFORMGEYSER.value,
@@ -32,6 +33,54 @@ geyser_ids: Set[int] = {
     PURIFIERVESPENEGEYSER.value,
     SHAKURASVESPENEGEYSER.value,
 }
+
+race_worker: Dict[Race, UnitTypeId] = {
+    Race.Protoss: UnitTypeId.PROBE,
+    Race.Terran: UnitTypeId.SCV,
+    Race.Zerg: UnitTypeId.DRONE,
+}
+
+race_townhalls: Dict[Race, Set[UnitTypeId]] = {
+    Race.Protoss: {UnitTypeId.NEXUS},
+    Race.Terran: {
+        UnitTypeId.COMMANDCENTER,
+        UnitTypeId.ORBITALCOMMAND,
+        UnitTypeId.PLANETARYFORTRESS,
+        UnitTypeId.COMMANDCENTERFLYING,
+        UnitTypeId.ORBITALCOMMANDFLYING,
+    },
+    Race.Zerg: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE},
+    Race.Random: {
+        # Protoss
+        UnitTypeId.NEXUS,
+        # Terran
+        UnitTypeId.COMMANDCENTER,
+        UnitTypeId.ORBITALCOMMAND,
+        UnitTypeId.PLANETARYFORTRESS,
+        UnitTypeId.COMMANDCENTERFLYING,
+        UnitTypeId.ORBITALCOMMANDFLYING,
+        # Zerg
+        UnitTypeId.HATCHERY,
+        UnitTypeId.LAIR,
+        UnitTypeId.HIVE,
+    },
+}
+
+warpgate_abilities: Dict[AbilityId, AbilityId] = {
+    AbilityId.GATEWAYTRAIN_ZEALOT: AbilityId.WARPGATETRAIN_ZEALOT,
+    AbilityId.GATEWAYTRAIN_STALKER: AbilityId.WARPGATETRAIN_STALKER,
+    AbilityId.GATEWAYTRAIN_HIGHTEMPLAR: AbilityId.WARPGATETRAIN_HIGHTEMPLAR,
+    AbilityId.GATEWAYTRAIN_DARKTEMPLAR: AbilityId.WARPGATETRAIN_DARKTEMPLAR,
+    AbilityId.GATEWAYTRAIN_SENTRY: AbilityId.WARPGATETRAIN_SENTRY,
+    AbilityId.TRAIN_ADEPT: AbilityId.TRAINWARP_ADEPT,
+}
+
+race_gas: Dict[Race, UnitTypeId] = {
+    Race.Protoss: UnitTypeId.ASSIMILATOR,
+    Race.Terran: UnitTypeId.REFINERY,
+    Race.Zerg: UnitTypeId.EXTRACTOR,
+}
+
 transforming: Dict[UnitTypeId, AbilityId] = {
     # Terran structures
     BARRACKS: LAND_BARRACKS,
