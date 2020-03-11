@@ -4,48 +4,63 @@ import math
 from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
 
 from .cache import property_immutable_cache, property_mutable_cache
-from .constants import (
-    transforming,
-    DAMAGE_BONUS_PER_UPGRADE,
-    IS_STRUCTURE,
-    IS_LIGHT,
-    IS_ARMORED,
-    IS_BIOLOGICAL,
-    IS_MECHANICAL,
-    IS_MASSIVE,
-    IS_PSIONIC,
-    UNIT_BATTLECRUISER,
-    UNIT_ORACLE,
-    TARGET_GROUND,
-    TARGET_AIR,
-    TARGET_BOTH,
-    IS_SNAPSHOT,
-    IS_VISIBLE,
-    IS_MINE,
-    IS_ENEMY,
-    IS_CLOAKED,
-    IS_REVEALED,
-    CAN_BE_ATTACKED,
-    IS_CARRYING_MINERALS,
-    IS_CARRYING_VESPENE,
-    IS_CARRYING_RESOURCES,
-    IS_ATTACKING,
-    IS_PATROLLING,
-    IS_GATHERING,
-    IS_RETURNING,
-    IS_COLLECTING,
-    IS_CONSTRUCTING_SCV,
-    IS_REPAIRING,
-    IS_DETECTOR,
-    UNIT_PHOTONCANNON,
-    UNIT_COLOSSUS,
-    SPEED_INCREASE_DICT,
-    SPEED_UPGRADE_DICT,
-    SPEED_INCREASE_ON_CREEP_DICT,
-    OFF_CREEP_SPEED_UPGRADE_DICT,
-    OFF_CREEP_SPEED_INCREASE_DICT,
-    SPEED_ALTERING_BUFFS,
-)
+try:
+    from .constants import (
+        transforming,
+        DAMAGE_BONUS_PER_UPGRADE,
+        IS_STRUCTURE,
+        IS_LIGHT,
+        IS_ARMORED,
+        IS_BIOLOGICAL,
+        IS_MECHANICAL,
+        IS_MASSIVE,
+        IS_PSIONIC,
+        UNIT_BATTLECRUISER,
+        UNIT_ORACLE,
+        TARGET_GROUND,
+        TARGET_AIR,
+        TARGET_BOTH,
+        IS_SNAPSHOT,
+        IS_VISIBLE,
+        IS_MINE,
+        IS_ENEMY,
+        IS_CLOAKED,
+        IS_REVEALED,
+        CAN_BE_ATTACKED,
+        IS_CARRYING_MINERALS,
+        IS_CARRYING_VESPENE,
+        IS_CARRYING_RESOURCES,
+        IS_ATTACKING,
+        IS_PATROLLING,
+        IS_GATHERING,
+        IS_RETURNING,
+        IS_COLLECTING,
+        IS_CONSTRUCTING_SCV,
+        IS_REPAIRING,
+        IS_DETECTOR,
+        UNIT_PHOTONCANNON,
+        UNIT_COLOSSUS,
+        SPEED_INCREASE_DICT,
+        SPEED_UPGRADE_DICT,
+        SPEED_INCREASE_ON_CREEP_DICT,
+        OFF_CREEP_SPEED_UPGRADE_DICT,
+        OFF_CREEP_SPEED_INCREASE_DICT,
+        SPEED_ALTERING_BUFFS,
+        ABILITY_ATTACK,
+        ABILITY_SMART,
+        ABILITY_GATHER,
+        ABILITY_RETURN,
+        ABILITY_MOVE,
+        ABILITY_HOLDPOSITION,
+        ABILITY_STOP,
+        ABILITY_PATROL,
+        ABILITY_REPAIR,
+        warpgate_abilities,
+        race_gas,
+    )
+except ValueError:
+    print(f"FIXME error importing constants")
+
 from .data import (
     Alliance,
     Attribute,
@@ -53,10 +68,8 @@ from .data import (
     DisplayType,
     Race,
     TargetType,
-    warpgate_abilities,
     TargetType,
     Target,
-    race_gas,
 )
 from .ids.ability_id import AbilityId
 from .ids.buff_id import BuffId
@@ -1242,7 +1255,7 @@ class Unit:
         :param target:
         :param queue:
         """
-        return self(AbilityId.ATTACK, target=target, queue=queue)
+        return self(ABILITY_ATTACK, target=target, queue=queue)
 
     def smart(self, target: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders the smart command. Equivalent to a right-click order.
@@ -1250,7 +1263,7 @@ class Unit:
         :param target:
         :param queue:
         """
-        return self(AbilityId.SMART, target=target, queue=queue)
+        return self(ABILITY_SMART, target=target, queue=queue)
 
     def gather(self, target: Unit, queue: bool = False) -> UnitCommand:
         """ Orders a unit to gather minerals or gas.
@@ -1259,7 +1272,7 @@ class Unit:
         :param target:
         :param queue:
         """
-        return self(AbilityId.HARVEST_GATHER, target=target, queue=queue)
+        return self(ABILITY_GATHER, target=target, queue=queue)
 
     def return_resource(self, target: Unit = None, queue: bool = False) -> UnitCommand:
         """ Orders the unit to return resource. Does not need a 'target'. 
@@ -1267,7 +1280,7 @@ class Unit:
         :param target:
         :param queue:
         """
-        return self(AbilityId.HARVEST_RETURN, target=target, queue=queue)
+        return self(ABILITY_RETURN, target=target, queue=queue)
 
     def move(self, position: Union[Unit, Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders the unit to move to 'position'.
@@ -1276,18 +1289,14 @@ class Unit:
         :param position:
         :param queue:
         """
-        return self(AbilityId.MOVE_MOVE, target=position, queue=queue)
-
-    def scan_move(self, *args, **kwargs) -> UnitCommand:
-        """ Deprecated: This ability redirects to 'AbilityId.ATTACK' """
-        return self(AbilityId.SCAN_MOVE, *args, **kwargs)
+        return self(ABILITY_MOVE, target=position, queue=queue)
 
     def hold_position(self, queue: bool = False) -> UnitCommand:
         """ Orders a unit to stop moving. It will not move until it gets new orders. 
 
         :param queue:
         """
-        return self(AbilityId.HOLDPOSITION, queue=queue)
+        return self(ABILITY_HOLDPOSITION, queue=queue)
 
     def stop(self, queue: bool = False) -> UnitCommand:
         """ Orders a unit to stop, but can start to move on its own
@@ -1296,7 +1305,7 @@ class Unit:
 
         :param queue:
         """
-        return self(AbilityId.STOP, queue=queue)
+        return self(ABILITY_STOP, queue=queue)
 
     def patrol(self, position: Union[Point2, Point3], queue: bool = False) -> UnitCommand:
         """ Orders a unit to patrol between position it has when the command starts and the target position.
@@ -1306,7 +1315,7 @@ class Unit:
         :param position:
         :param queue:
         """
-        return self(AbilityId.PATROL, target=position, queue=queue)
+        return self(ABILITY_PATROL, target=position, queue=queue)
 
     def repair(self, repair_target: Unit, queue: bool = False) -> UnitCommand:
         """ Order an SCV or MULE to repair. 
@@ -1314,7 +1323,7 @@ class Unit:
         :param repair_target:
         :param queue:
         """
-        return self(AbilityId.EFFECT_REPAIR, target=repair_target, queue=queue)
+        return self(ABILITY_REPAIR, target=repair_target, queue=queue)
 
     def __hash__(self):
         return self.tag

@@ -3,7 +3,6 @@ from bisect import bisect_left
 from functools import lru_cache
 from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
 
-from .constants import ZERGLING
 from .data import Attribute, Race
 from .ids.ability_id import AbilityId
 from .ids.unit_typeid import UnitTypeId
@@ -48,7 +47,7 @@ class GameData:
                 continue
 
             if unit.creation_ability == ability:
-                if unit.id == ZERGLING:
+                if unit.id == UnitTypeId.ZERGLING:
                     # HARD CODED: zerglings are generated in pairs
                     return Cost(unit.cost.minerals * 2, unit.cost.vespene * 2, unit.cost.time)
                 # Correction for morphing units, e.g. orbital would return 550/0 instead of actual 150/0
@@ -134,8 +133,8 @@ class UnitTypeData:
         # The ability_id for lurkers is
         # LURKERASPECTMPFROMHYDRALISKBURROWED_LURKERMPFROMHYDRALISKBURROWED
         # instead of the correct MORPH_LURKER.
-        if proto.unit_id == UnitTypeId.LURKERMP.value:
-            proto.ability_id = AbilityId.MORPH_LURKER.value
+        # if proto.unit_id == UnitTypeId.LURKERMP.value:
+        #     proto.ability_id = AbilityId.MORPH_LURKER.value
 
         self._game_data = game_data
         self._proto = proto

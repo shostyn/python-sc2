@@ -11,7 +11,6 @@ from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .cache import property_cache_forever, property_cache_once_per_frame, property_cache_once_per_frame_no_copy
 from .constants import (
-    FakeEffectID,
     abilityid_to_unittypeid,
     geyser_ids,
     mineral_ids,
@@ -22,6 +21,7 @@ from .constants import (
     EQUIVALENTS_FOR_TECH_PROGRESS,
     TERRAN_STRUCTURES_REQUIRE_SCV,
 )
+from .game_state import FakeEffectID
 from .data import ActionResult, Alert, Race, Result, Target
 from .constants import race_gas, race_townhalls, race_worker
 from .distances import DistanceCalculation
@@ -29,8 +29,8 @@ from .game_data import AbilityData, GameData
 
 from .dicts.unit_trained_from import UNIT_TRAINED_FROM
 from .dicts.unit_train_build_abilities import TRAIN_INFO
-from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
-from .dicts.unit_research_abilities import RESEARCH_INFO
+# from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
+# from .dicts.unit_research_abilities import RESEARCH_INFO
 
 # Imports for mypy and pycharm autocomplete as well as sphinx autodocumentation
 from .game_state import Blip, EffectData, GameState
@@ -1267,6 +1267,8 @@ class BotAI(DistanceCalculation):
 
         :param upgrade_type:
         """
+        from .dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
+        from .dicts.unit_research_abilities import RESEARCH_INFO
         assert (
             upgrade_type in UPGRADE_RESEARCHED_FROM
         ), f"Could not find upgrade {upgrade_type} in 'research from'-dictionary"

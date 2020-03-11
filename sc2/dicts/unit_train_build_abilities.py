@@ -39,13 +39,16 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         }
     },
     UnitTypeId.CREEPTUMOR: {
-        UnitTypeId.CREEPTUMOR: {"ability": AbilityId.BUILD_CREEPTUMOR_TUMOR, "requires_placement_position": True}
+        UnitTypeId.CREEPTUMOR: {"ability": AbilityId.CREEPTUMORBUILD_CREEPTUMOR, "requires_placement_position": True}
     },
     UnitTypeId.CREEPTUMORBURROWED: {
-        UnitTypeId.CREEPTUMOR: {"ability": AbilityId.BUILD_CREEPTUMOR, "requires_placement_position": True}
+        UnitTypeId.CREEPTUMOR: {
+            "ability": AbilityId.GENERALBUILDCREEPTUMOR_BUILD_CREEPTUMOR,
+            "requires_placement_position": True,
+        }
     },
     UnitTypeId.CREEPTUMORQUEEN: {
-        UnitTypeId.CREEPTUMOR: {"ability": AbilityId.BUILD_CREEPTUMOR_TUMOR, "requires_placement_position": True}
+        UnitTypeId.CREEPTUMOR: {"ability": AbilityId.CREEPTUMORBUILD_CREEPTUMOR, "requires_placement_position": True}
     },
     UnitTypeId.DRONE: {
         UnitTypeId.BANELINGNEST: {
@@ -71,7 +74,7 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
             "requires_placement_position": True,
         },
         UnitTypeId.LURKERDENMP: {
-            "ability": AbilityId.BUILD_LURKERDEN,
+            "ability": AbilityId.ZERGBUILD_MUTATEINTOLURKERDEN,
             "required_building": UnitTypeId.LAIR,
             "requires_placement_position": True,
         },
@@ -112,9 +115,9 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         },
     },
     UnitTypeId.FACTORY: {
-        UnitTypeId.CYCLONE: {"ability": AbilityId.TRAIN_CYCLONE, "requires_techlab": True},
+        UnitTypeId.CYCLONE: {"ability": AbilityId.FACTORYTRAIN_BUILDCYCLONE, "requires_techlab": True},
         UnitTypeId.HELLION: {"ability": AbilityId.FACTORYTRAIN_HELLION},
-        UnitTypeId.HELLIONTANK: {"ability": AbilityId.TRAIN_HELLBAT, "required_building": UnitTypeId.ARMORY},
+        UnitTypeId.HELLIONTANK: {"ability": AbilityId.FACTORYTRAIN_HELLIONTANK, "required_building": UnitTypeId.ARMORY},
         UnitTypeId.SIEGETANK: {"ability": AbilityId.FACTORYTRAIN_SIEGETANK, "requires_techlab": True},
         UnitTypeId.THOR: {
             "ability": AbilityId.FACTORYTRAIN_THOR,
@@ -125,7 +128,7 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
     },
     UnitTypeId.GATEWAY: {
         UnitTypeId.ADEPT: {
-            "ability": AbilityId.TRAIN_ADEPT,
+            "ability": AbilityId.GATEWAYTRAIN_WARPINADEPT,
             "required_building": UnitTypeId.CYBERNETICSCORE,
             "requires_power": True,
         },
@@ -159,7 +162,7 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         UnitTypeId.QUEEN: {"ability": AbilityId.TRAINQUEEN_QUEEN, "required_building": UnitTypeId.SPAWNINGPOOL}
     },
     UnitTypeId.HYDRALISK: {
-        UnitTypeId.LURKERMP: {"ability": AbilityId.MORPH_LURKER, "required_building": UnitTypeId.LURKERDENMP}
+        UnitTypeId.LURKERMP: {"ability": AbilityId.MORPHTOLURKER_LURKERMP, "required_building": UnitTypeId.LURKERDENMP}
     },
     UnitTypeId.LAIR: {
         UnitTypeId.HIVE: {"ability": AbilityId.UPGRADETOHIVE_HIVE, "required_building": UnitTypeId.INFESTATIONPIT},
@@ -173,7 +176,10 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         UnitTypeId.MUTALISK: {"ability": AbilityId.LARVATRAIN_MUTALISK, "required_building": UnitTypeId.SPIRE},
         UnitTypeId.OVERLORD: {"ability": AbilityId.LARVATRAIN_OVERLORD},
         UnitTypeId.ROACH: {"ability": AbilityId.LARVATRAIN_ROACH, "required_building": UnitTypeId.ROACHWARREN},
-        UnitTypeId.SWARMHOSTMP: {"ability": AbilityId.TRAIN_SWARMHOST, "required_building": UnitTypeId.INFESTATIONPIT},
+        UnitTypeId.SWARMHOSTMP: {
+            "ability": AbilityId.LARVATRAIN_SWARMHOSTMP,
+            "required_building": UnitTypeId.INFESTATIONPIT,
+        },
         UnitTypeId.ULTRALISK: {
             "ability": AbilityId.LARVATRAIN_ULTRALISK,
             "required_building": UnitTypeId.ULTRALISKCAVERN,
@@ -189,21 +195,30 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         UnitTypeId.PROBE: {"ability": AbilityId.NEXUSTRAIN_PROBE},
     },
     UnitTypeId.NYDUSNETWORK: {
-        UnitTypeId.NYDUSCANAL: {"ability": AbilityId.BUILD_NYDUSWORM, "requires_placement_position": True}
+        UnitTypeId.NYDUSCANAL: {"ability": AbilityId.BUILDNYDUSCANAL_NYDUSCANAL, "requires_placement_position": True}
     },
     UnitTypeId.ORACLE: {
-        UnitTypeId.ORACLESTASISTRAP: {"ability": AbilityId.BUILD_STASISTRAP, "requires_placement_position": True}
+        UnitTypeId.ORACLESTASISTRAP: {
+            "ability": AbilityId.ORACLESTASISTRAPBUILD_ORACLEBUILDSTASISTRAP,
+            "requires_placement_position": True,
+        }
     },
     UnitTypeId.ORBITALCOMMAND: {UnitTypeId.SCV: {"ability": AbilityId.COMMANDCENTERTRAIN_SCV}},
     UnitTypeId.OVERLORD: {
         UnitTypeId.OVERLORDTRANSPORT: {
-            "ability": AbilityId.MORPH_OVERLORDTRANSPORT,
+            "ability": AbilityId.MORPHTOTRANSPORTOVERLORD_MORPHTOOVERLORDTRANSPORT,
             "required_building": UnitTypeId.LAIR,
         },
-        UnitTypeId.OVERSEER: {"ability": AbilityId.MORPH_OVERSEER, "required_building": UnitTypeId.LAIR},
+        UnitTypeId.OVERSEER: {
+            "ability": AbilityId.MORPHTOOVERSEER_MORPHTOOVERSEER,
+            "required_building": UnitTypeId.LAIR,
+        },
     },
     UnitTypeId.OVERLORDTRANSPORT: {
-        UnitTypeId.OVERSEER: {"ability": AbilityId.MORPH_OVERSEER, "required_building": UnitTypeId.LAIR}
+        UnitTypeId.OVERSEER: {
+            "ability": AbilityId.MORPHTOOVERSEER_MORPHTOOVERSEER,
+            "required_building": UnitTypeId.LAIR,
+        }
     },
     UnitTypeId.OVERSEER: {UnitTypeId.CHANGELING: {"ability": AbilityId.SPAWNCHANGELING_SPAWNCHANGELING}},
     UnitTypeId.OVERSEERSIEGEMODE: {UnitTypeId.CHANGELING: {"ability": AbilityId.SPAWNCHANGELING_SPAWNCHANGELING}},
@@ -253,7 +268,7 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
             "requires_placement_position": True,
         },
         UnitTypeId.SHIELDBATTERY: {
-            "ability": AbilityId.BUILD_SHIELDBATTERY,
+            "ability": AbilityId.PROTOSSBUILD_SHIELDBATTERY,
             "required_building": UnitTypeId.CYBERNETICSCORE,
             "requires_placement_position": True,
         },
@@ -274,8 +289,11 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         },
     },
     UnitTypeId.QUEEN: {
-        UnitTypeId.CREEPTUMOR: {"ability": AbilityId.BUILD_CREEPTUMOR, "requires_placement_position": True},
-        UnitTypeId.CREEPTUMORQUEEN: {"ability": AbilityId.BUILD_CREEPTUMOR_QUEEN, "requires_placement_position": True},
+        UnitTypeId.CREEPTUMOR: {
+            "ability": AbilityId.GENERALBUILDCREEPTUMOR_BUILD_CREEPTUMOR,
+            "requires_placement_position": True,
+        },
+        UnitTypeId.CREEPTUMORQUEEN: {"ability": AbilityId.QUEENBUILD_CREEPTUMOR, "requires_placement_position": True},
     },
     UnitTypeId.RAVEN: {UnitTypeId.AUTOTURRET: {"ability": AbilityId.BUILDAUTOTURRET_AUTOTURRET}},
     UnitTypeId.ROACH: {
@@ -288,7 +306,7 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
             "requires_power": True,
         },
         UnitTypeId.DISRUPTOR: {
-            "ability": AbilityId.TRAIN_DISRUPTOR,
+            "ability": AbilityId.ROBOTICSFACILITYTRAIN_WARPINDISRUPTOR,
             "required_building": UnitTypeId.ROBOTICSBAY,
             "requires_power": True,
         },
@@ -384,11 +402,11 @@ TRAIN_INFO: Dict[UnitTypeId, Dict[UnitTypeId, Dict[str, Union[AbilityId, bool, U
         UnitTypeId.RAVEN: {"ability": AbilityId.STARPORTTRAIN_RAVEN, "requires_techlab": True},
         UnitTypeId.VIKINGFIGHTER: {"ability": AbilityId.STARPORTTRAIN_VIKINGFIGHTER},
     },
-    UnitTypeId.SWARMHOSTBURROWEDMP: {UnitTypeId.LOCUSTMPFLYING: {"ability": AbilityId.EFFECT_SPAWNLOCUSTS}},
-    UnitTypeId.SWARMHOSTMP: {UnitTypeId.LOCUSTMPFLYING: {"ability": AbilityId.EFFECT_SPAWNLOCUSTS}},
+    UnitTypeId.SWARMHOSTBURROWEDMP: {UnitTypeId.LOCUSTMPFLYING: {"ability": AbilityId.SPAWNLOCUSTSTARGETED_SWARMHOST}},
+    UnitTypeId.SWARMHOSTMP: {UnitTypeId.LOCUSTMPFLYING: {"ability": AbilityId.SPAWNLOCUSTSTARGETED_SWARMHOST}},
     UnitTypeId.WARPGATE: {
         UnitTypeId.ADEPT: {
-            "ability": AbilityId.TRAINWARP_ADEPT,
+            "ability": AbilityId.WARPGATETRAIN_WARPINADEPT,
             "required_building": UnitTypeId.CYBERNETICSCORE,
             "requires_placement_position": True,
             "requires_power": True,

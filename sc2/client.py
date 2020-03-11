@@ -8,7 +8,6 @@ from s2clientprotocol import query_pb2 as query_pb
 from s2clientprotocol import raw_pb2 as raw_pb
 from s2clientprotocol import sc2api_pb2 as sc_pb
 
-from .action import combine_actions
 from .data import ActionResult, ChatChannel, Race, Result, Status
 from .game_data import AbilityData, GameData
 from .game_info import GameInfo
@@ -181,6 +180,7 @@ class Client(Protocol):
         return GameInfo(result.game_info)
 
     async def actions(self, actions, return_successes=False):
+        from .action import combine_actions
         if not actions:
             return None
         elif not isinstance(actions, list):

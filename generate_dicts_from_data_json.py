@@ -123,19 +123,19 @@ def get_unit_train_build_abilities(data):
         # Also doesnt include building addons
         if not train_unit_type_id_value and (
             "LARVATRAIN_" in ability_id.name
-            or ability_id
+            or ability_id.value
             in {
-                AbilityId.MORPHTOBROODLORD_BROODLORD,
-                AbilityId.MORPHZERGLINGTOBANELING_BANELING,
-                AbilityId.MORPHTORAVAGER_RAVAGER,
-                AbilityId.MORPH_LURKER,
-                AbilityId.UPGRADETOLAIR_LAIR,
-                AbilityId.UPGRADETOHIVE_HIVE,
-                AbilityId.UPGRADETOGREATERSPIRE_GREATERSPIRE,
-                AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND,
-                AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS,
-                AbilityId.MORPH_OVERLORDTRANSPORT,
-                AbilityId.MORPH_OVERSEER,
+                1372, # AbilityId.MORPHTOBROODLORD_BROODLORD,
+                80, # AbilityId.MORPHZERGLINGTOBANELING_BANELING,
+                2330, # AbilityId.MORPHTORAVAGER_RAVAGER,
+                2332, # AbilityId.MORPH_LURKER,
+                1216, # AbilityId.UPGRADETOLAIR_LAIR,
+                1218, # AbilityId.UPGRADETOHIVE_HIVE,
+                1220, # AbilityId.UPGRADETOGREATERSPIRE_GREATERSPIRE,
+                1516, # AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND,
+                1450, # AbilityId.UPGRADETOPLANETARYFORTRESS_PLANETARYFORTRESS,
+                2708, # AbilityId.MORPH_OVERLORDTRANSPORT,
+                1448, # AbilityId.MORPH_OVERSEER,
             }
         ):
             # If all morph units are used, unit_trained_from.py will be "wrong" because it will list that a siege tank can be trained from siegetanksieged and similar:
@@ -456,11 +456,7 @@ def generate_redirect_abilities_dict(data: dict):
     entry: dict
     for entry in ability_data:
         ability_id_value: int = entry["id"]
-        try:
-            ability_id: AbilityId = AbilityId(ability_id_value)
-        except Exception as e:
-            print(f"Error with ability id value {ability_id_value}")
-            continue
+        ability_id: AbilityId = AbilityId(ability_id_value)
 
         generic_redirect_ability_value: int = game_data.abilities[ability_id_value]._proto.remaps_to_ability_id
         if generic_redirect_ability_value:

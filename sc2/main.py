@@ -15,6 +15,8 @@ from .player import Bot, Human
 from .portconfig import Portconfig
 from .protocol import ConnectionAlreadyClosed, ProtocolError
 from .sc2process import SC2Process
+from .ids_updater import IdUpdater
+from sc2.versions import VERSIONS
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +100,21 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
 
     game_data = await client.get_game_data()
     game_info = await client.get_game_info()
+
+    # Figure out the current game version, client.ping().ping.game_version only returns the most recent
+    ping_result = await client.ping()
+    game_version = ping_result.ping.game_version
+    # It's possible that the version is newer than the latest entry in the VERSIONS dict, then version_dict is None
+    version_dict = next((d for d in VERSIONS if d["data-hash"] == ping_result.ping.data_version), None)
+    if version_dict is not None:
+        # E.g. "4.5.1.67344"
+        game_version: str = f"{version_dict['label']}.{version_dict['version']}"
+    print(ping_result)
+    print(version_dict)
+
+    # Generate IDs from game_data and reimport them
+    id_updater = IdUpdater(game_data, game_version, verbose=True)
+    id_updater.update_and_reimport_ids()
 
     # This game_data will become self._game_data in botAI
     ai._prepare_start(client, player_id, game_info, game_data, realtime=realtime)

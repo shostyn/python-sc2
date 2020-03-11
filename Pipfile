@@ -12,6 +12,7 @@ pyglet = "*"
 numpy = "*"
 scipy = "*"
 mpyq = "*"
+loguru = "*"
 
 [dev-packages]
 atomicwrites = "*"

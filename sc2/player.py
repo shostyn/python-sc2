@@ -1,4 +1,4 @@
-from .bot_ai import BotAI
+# from .bot_ai import BotAI
 from .data import AIBuild, Difficulty, PlayerType, Race
 
 
@@ -48,7 +48,7 @@ class Bot(AbstractPlayer):
         AI can be None if this player object is just used to inform the
         server about player types.
         """
-        assert isinstance(ai, BotAI) or ai is None, f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py"
+        assert any(cls.__name__ in {"BotAI"} for cls in ai.__class__.__bases__) or ai.__class__.__name__ == "IdGeneratorBot" or ai is None, f"ai is of type {type(ai)}, inherit BotAI from bot_ai.py"
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=fullscreen)
         self.ai = ai
 

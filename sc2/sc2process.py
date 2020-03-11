@@ -18,7 +18,7 @@ from .controller import Controller
 from .paths import Paths
 from sc2 import paths
 
-from sc2.versions import VERSIONS
+from .versions import VERSIONS
 
 logger = logging.getLogger(__name__)
 

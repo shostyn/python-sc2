@@ -11,8 +11,9 @@ from ..ids.upgrade_id import UpgradeId
 from typing import Dict, Set, Union
 
 UNIT_UNIT_ALIAS: Dict[UnitTypeId, UnitTypeId] = {
+    UnitTypeId.ACCELERATIONZONEFLYINGMEDIUM: UnitTypeId.EXTRACTOR,
+    UnitTypeId.ACCELERATIONZONEFLYINGSMALL: UnitTypeId.ASSIMILATOR,
     UnitTypeId.ADEPTPHASESHIFT: UnitTypeId.ADEPT,
-    UnitTypeId.ASSIMILATORRICH: UnitTypeId.ASSIMILATOR,
     UnitTypeId.BANELINGBURROWED: UnitTypeId.BANELING,
     UnitTypeId.BARRACKSFLYING: UnitTypeId.BARRACKS,
     UnitTypeId.CHANGELINGMARINE: UnitTypeId.CHANGELING,
@@ -24,7 +25,6 @@ UNIT_UNIT_ALIAS: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.CREEPTUMORBURROWED: UnitTypeId.CREEPTUMOR,
     UnitTypeId.CREEPTUMORQUEEN: UnitTypeId.CREEPTUMOR,
     UnitTypeId.DRONEBURROWED: UnitTypeId.DRONE,
-    UnitTypeId.EXTRACTORRICH: UnitTypeId.EXTRACTOR,
     UnitTypeId.FACTORYFLYING: UnitTypeId.FACTORY,
     UnitTypeId.GHOSTNOVA: UnitTypeId.GHOST,
     UnitTypeId.HERCPLACEMENT: UnitTypeId.HERC,

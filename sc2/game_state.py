@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, Set, Tuple, Union, TYPE_CHECKING
 
-from .constants import FakeEffectID, FakeEffectRadii
 from .data import Alliance, DisplayType
 from .ids.effect_id import EffectId
 from .ids.unit_typeid import UnitTypeId
@@ -11,6 +10,17 @@ from .position import Point2, Point3
 from .power_source import PsionicMatrix
 from .score import ScoreDetails
 
+
+FakeEffectRadii: Dict[int, float] = {
+    UnitTypeId.KD8CHARGE.value: 2,
+    UnitTypeId.PARASITICBOMBDUMMY.value: 3,
+    UnitTypeId.FORCEFIELD.value: 1.5,
+}
+FakeEffectID: Dict[int, str] = {
+    UnitTypeId.KD8CHARGE.value: "KD8CHARGE",
+    UnitTypeId.PARASITICBOMBDUMMY.value: "PARASITICBOMB",
+    UnitTypeId.FORCEFIELD.value: "FORCEFIELD",
+}
 
 class Blip:
     def __init__(self, proto):

@@ -78,6 +78,16 @@ class Protocol:
         return response
 
     async def ping(self):
+        """ Has attributes (example):
+        ping {
+            game_version: "4.11.4.78285"
+            data_version: "69493AFAB5C7B45DDB2F3442FD60F0CF"
+            data_build: 78285
+            base_build: 78285
+        }
+        id: 0
+        status: in_game
+        """
         result = await self._execute(ping=sc_pb.RequestPing())
         return result
 
