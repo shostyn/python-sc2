@@ -5,10 +5,12 @@ import math
 from itertools import chain
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union, Generator, TYPE_CHECKING
 
+import numpy as np
+from scipy.spatial.distance import cdist
+
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
 from .unit import Unit
-import numpy as np
 
 warnings.simplefilter("once")
 
@@ -216,9 +218,10 @@ class Units(list):
                 (unit1 for unit1 in self),
                 key=lambda unit2: self._bot_object._distance_squared_unit_to_unit(unit2, position),
             )
+        distances = self._bot_object._distance_squared_units_to_pos(self,
+                position)
 
-        distances = self._bot_object._distance_units_to_pos(self, position)
-        return min(((unit, dist) for unit, dist in zip(self, distances)), key=lambda my_tuple: my_tuple[1])[0]
+        return self[distances.argmin()]
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -239,10 +242,13 @@ class Units(list):
                 (unit1 for unit1 in self),
                 key=lambda unit2: self._bot_object._distance_squared_unit_to_unit(unit2, position),
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
-        return max(((unit, dist) for unit, dist in zip(self, distances)), key=lambda my_tuple: my_tuple[1])[0]
 
-    def closer_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
+        distances = self._bot_object._distance_squared_units_to_pos(self,
+                position)
+        return self[distances.argmax()]
+
+    def closer_than(self, distance: Union[int, float], position: Union[Unit,
+            Point2, Point3], include_radius=False) -> Units:
         """
         Returns all units (from this Units object) that are closer than 'distance' away from target unit or position.
 
@@ -259,15 +265,22 @@ class Units(list):
         """
         if not self:
             return self
+        distance_squared = distance ** 2
         if isinstance(position, Unit):
-            distance_squared = distance ** 2
-            return self.subgroup(
-                unit
-                for unit in self
-                if self._bot_object._distance_squared_unit_to_unit(unit, position) < distance_squared
-            )
-        distances = self._bot_object._distance_units_to_pos(self, position)
-        return self.subgroup(unit for unit, dist in zip(self, distances) if dist < distance)
+            if include_radius:
+                return self.subgroup(unit for unit in self if
+                        self._bot_object._distance_squared_unit_to_unit(unit,
+                            position) < distance_squared + unit.radius ** 2)
+            else:
+                return self.subgroup(unit for unit in self if
+                        self._bot_object._distance_squared_unit_to_unit(unit,
+                            position) < distance_squared)
+
+        distances = self._bot_object._distance_squared_units_to_pos(self,
+                position)
+
+        return self.subgroup(unit for unit, dist in zip(self, distances) if
+                dist < distance_squared)
 
     def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
         """
@@ -478,9 +491,32 @@ class Units(list):
         unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
         return sorted(self, key=lambda unit2: unit_dist_dict[unit2.tag], reverse=reverse)
 
-    def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool = False) -> Units:
-        """ This function should be a bit faster than using units.sorted(key=lambda u: u.distance_to(position)) """
-        return self.subgroup(self._list_sorted_by_distance_to(position, reverse=reverse))
+    def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse:
+            bool = False, include_radius = False) -> Units:
+        """ Returns a new Units object sorted to position (fast)"""
+        if not self:
+            return self
+
+        if isinstance(position, Unit):
+            if include_radius:
+                return self.subgroup(sorted(self,
+                    key=lambda unit:
+                    self._bot_object._distance_squared_unit_to_unit(
+                        unit, position) + unit.radius ** 2, reverse=reverse))
+            else:
+                return self.subgroup(sorted(self,
+                    key=lambda unit:
+                    self._bot_object._distance_squared_unit_to_unit(
+                        unit, position), reverse=reverse))
+
+        distances = self._bot_object._distance_squared_units_to_pos(self,
+                position)
+
+        dist_pair = zip(distances, self)
+        return self.subgroup(
+                [unit for _, unit in sorted(dist_pair,
+                                            key=lambda x: x[0],
+                                            reverse=reverse)])
 
     def tags_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> Units:
         """ Filters all units that have their tags in the 'other' set/list/dict
@@ -649,16 +685,6 @@ class Units(list):
         return self.filter(lambda unit: unit.is_idle)
 
     @property
-    def owned(self) -> Units:
-        """ Deprecated: All your units. """
-        return self.filter(lambda unit: unit.is_mine)
-
-    @property
-    def enemy(self) -> Units:
-        """ Deprecated: All enemy units."""
-        return self.filter(lambda unit: unit.is_enemy)
-
-    @property
     def flying(self) -> Units:
         """ Returns all units that are flying. """
         return self.filter(lambda unit: unit.is_flying)
@@ -667,16 +693,6 @@ class Units(list):
     def not_flying(self) -> Units:
         """ Returns all units that not are flying. """
         return self.filter(lambda unit: not unit.is_flying)
-
-    @property
-    def structure(self) -> Units:
-        """ Deprecated: All structures. """
-        return self.filter(lambda unit: unit.is_structure)
-
-    @property
-    def not_structure(self) -> Units:
-        """ Deprecated: All units that are not structures. """
-        return self.filter(lambda unit: not unit.is_structure)
 
     @property
     def gathering(self) -> Units:
