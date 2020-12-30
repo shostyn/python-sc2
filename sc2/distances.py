@@ -30,13 +30,13 @@ class DistanceCalculation:
     @property
     def _cdist(self) -> np.ndarray:
         """ As property, so it will be recalculated each time it is called, or return from cache if it is called multiple times in teh same game_loop. """
-        if self._generated_frame2 != self.state.game_loop:
+        if self._generated_frame != self.state.game_loop:
             return self._calculate_distances()
         return self._cached_cdist
 
     def _calculate_distances(self) -> np.ndarray:
         """ Nearly same as above, but without asserts"""
-        self._generated_frame2 = self.state.game_loop
+        self._generated_frame = self.state.game_loop
         flat_positions = (
             coord for unit in self.all_units for coord in unit.position_tuple
         )

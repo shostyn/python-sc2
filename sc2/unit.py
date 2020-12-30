@@ -906,7 +906,10 @@ class Unit:
         """ Time until building finished building queued objects"""
 
         def order_build_time(order):
-            return self._bot_object.game_data.calculate_ability_cost(order.ability).time / 22.4
+            return ((1 - order.progress)
+                    * self._bot_object.game_data
+                          .calculate_ability_cost(order.ability)
+                          .time / 22.4)
 
         return sum(map(order_build_time, self.orders))
 

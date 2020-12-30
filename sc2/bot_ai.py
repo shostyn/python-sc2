@@ -750,7 +750,7 @@ class BotAI(DistanceCalculation):
     async def can_place(
         self,
         building: Union[AbilityData, AbilityId, UnitTypeId],
-        positions: List[Union[Point2, tuple, list]],
+        positions: Union[Point2, tuple, List[Union[Point2, tuple, list]]],
     ) -> List[bool]:
         """Tests if a building can be placed in the given locations.
 
@@ -776,7 +776,10 @@ class BotAI(DistanceCalculation):
             building = self._game_data.abilities[building.value]
 
         if isinstance(positions, (Point2, tuple)):
-            return await self.can_place_single(building, positions)
+            result = await self.client.query_building_placement(
+                building, [positions]
+            )
+            return result[0]
         else:
             assert isinstance(
                 positions, list
@@ -785,9 +788,9 @@ class BotAI(DistanceCalculation):
                 positions[0], (Point2, tuple, list)
             ), f"List is expected to have Point2, tuples or lists, but instead had: {positions[0]} {type(positions[0])}"
 
-        return await self._client._query_building_placement_fast(
-            building, positions
-        )
+            return await self._client.query_building_placement(
+                building, positions
+            )
 
     async def find_placement(
         self,
@@ -813,7 +816,8 @@ class BotAI(DistanceCalculation):
         :param placement_step:"""
 
         assert isinstance(building, (AbilityId, UnitTypeId))
-        assert isinstance(near, Point2), f"{near} is no Point2 object"
+        if isinstance(near, Unit):
+            near = near.position
 
         if isinstance(building, UnitTypeId):
             building = self._game_data.units[building.value].creation_ability
@@ -864,11 +868,7 @@ class BotAI(DistanceCalculation):
             res = await self._client.query_building_placement(
                 building, possible_positions
             )
-            possible = [
-                p
-                for r, p in zip(res, possible_positions)
-                if r == ActionResult.Success
-            ]
+            possible = [p for r, p in zip(res, possible_positions) if r]
 
             if addon_place:
                 res = await self._client.query_building_placement(
@@ -877,11 +877,7 @@ class BotAI(DistanceCalculation):
                     ].creation_ability,
                     [p.offset((2.5, -0.5)) for p in possible],
                 )
-                possible = [
-                    p
-                    for r, p in zip(res, possible)
-                    if r == ActionResult.Success
-                ]
+                possible = [p for r, p in zip(res, possible) if r]
 
             if not possible:
                 continue
