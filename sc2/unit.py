@@ -132,7 +132,7 @@ class Unit:
     @property_immutable_cache
     def _creation_ability(self) -> AbilityData:
         """ Provides the AbilityData of the creation ability of this unit. """
-        return self._bot_object._game_data.units[self._proto.unit_type].creation_ability
+        return self._type_data.creation_ability
 
     @property
     def name(self) -> str:
@@ -232,7 +232,7 @@ class Unit:
         if self.can_attack_ground:
             weapon = next((weapon for weapon in self._weapons if weapon.type in TARGET_GROUND), None)
             if weapon:
-                return (weapon.damage * weapon.attacks) / weapon.speed
+                return (weapon.damage * weapon.attacks) / weapon.speed * 1.4
         return 0
 
     @property_immutable_cache
@@ -263,7 +263,7 @@ class Unit:
         if self.can_attack_air:
             weapon = next((weapon for weapon in self._weapons if weapon.type in TARGET_AIR), None)
             if weapon:
-                return (weapon.damage * weapon.attacks) / weapon.speed
+                return (weapon.damage * weapon.attacks) / weapon.speed * 1.4
         return 0
 
     @property_immutable_cache
@@ -301,23 +301,16 @@ class Unit:
         return self._type_data._proto.sight_range
 
     @property
-    def movement_speed(self) -> float:
-        """ Returns the movement speed of the unit.
-        This is the unit movement speed on game speed 'normal'. To convert it to 'faster' movement speed, multiply it by a factor of '1.4'. E.g. reaper movement speed is listed here as 3.75, but should actually be 5.25.
-        Does not include upgrades or buffs. """
-        return self._type_data._proto.movement_speed
-
-    @property
-    def real_speed(self) -> float:
-        """ See 'calculate_speed'. """
-        return self.calculate_speed()
+    def move_speed(self) -> float:
+        """ Returns the movement speed of the unit."""
+        return self.calculate_speed() * 1.4
 
     def calculate_speed(self, upgrades: Set[UpgradeId] = None) -> float:
         """ Calculates the movement speed of the unit including buffs and upgrades.
         Note: Upgrades only work with own units. Use "upgrades" param to set expected enemy upgrades.
 
         :param upgrades: """
-        speed: float = self.movement_speed
+        speed: float = self._type_data._proto.movement_speed
         unit_type: UnitTypeId = self.type_id
 
         # ---- Upgrades ----
@@ -358,17 +351,6 @@ class Unit:
         for buff in self.buffs:
             speed *= SPEED_ALTERING_BUFFS.get(buff, 1)
         return speed
-
-    @property
-    def distance_per_step(self) -> float:
-        """ The distance a unit can move in one step. This does not take acceleration into account.
-        Useful for micro-retreat/pathfinding """
-        return (self.real_speed / 22.4) * self._bot_object.client.game_step
-
-    @property
-    def distance_to_weapon_ready(self) -> float:
-        """ Distance a unit can travel before it's weapon is ready to be fired again."""
-        return (self.real_speed / 22.4) * self.weapon_cooldown
 
     @property
     def is_mineral_field(self) -> bool:
@@ -842,7 +824,7 @@ class Unit:
 
         NOTE: This can be None if a building doesn't have a creation ability.
         For rich vespene buildings, flying terran buildings, this returns None"""
-        return self._bot_object._game_data.units[self._proto.unit_type].footprint_radius
+        return self._type_data.footprint_radius
 
     @property
     def radius(self) -> float:
@@ -853,6 +835,21 @@ class Unit:
     def build_progress(self) -> float:
         """ Returns completion in range [0,1]."""
         return self._proto.build_progress
+
+    @property
+    def build_time_remaining(self) -> float:
+        """ Time until structure is complete """
+        return (1 - self.build_progress) * self._type_data.cost.time / 22.4
+    
+    @property
+    def queue_time_remaining(self) -> float:
+        """ Time until building finished building queued objects"""
+        def order_build_time(order):
+            return self._bot_object\
+                    .game_data\
+                    .calculate_ability_cost(order.ability)\
+                    .time / 22.4
+        return sum(map(order_build_time, self.orders))
 
     @property
     def is_ready(self) -> bool:
@@ -1021,13 +1018,7 @@ class Unit:
             else:
                 return Point2.from_proto(target)
         return None
-
-    @property
-    def noqueue(self) -> bool:
-        """ Checks if the unit is idle. """
-        warnings.warn("noqueue will be removed soon, please use is_idle instead", DeprecationWarning, stacklevel=2)
-        return self.is_idle
-
+    
     @property
     def is_idle(self) -> bool:
         """ Checks if unit is idle. """
@@ -1197,7 +1188,7 @@ class Unit:
 
     @property_immutable_cache
     def weapon_cooldown(self) -> float:
-        """ Returns the time until the unit can fire again,
+        """ Returns the time in frames until the unit can fire again,
         returns -1 for units that can't attack.
         Usage:
         if unit.weapon_cooldown == 0:
@@ -1211,13 +1202,18 @@ class Unit:
         return -1
 
     @property
+    def cooldown(self) -> float:
+        """ Returns weapon cooldown time in seconds """
+        return self.weapon_cooldown / 22.4
+
+    @property
     def weapon_ready(self) -> bool:
         """ Checks if the weapon is ready to be fired. """
         return self.weapon_cooldown == 0
 
     @property
     def engaged_target_tag(self) -> int:
-        # TODO What does this do?
+        """ Tag of attack target """
         return self._proto.engaged_target_tag
 
     # TODO: Add rally targets https://github.com/Blizzard/s2client-proto/commit/80484692fa9e0ea6e7be04e728e4f5995c64daa3#diff-3b331650a4f7c9271a579b31cf771ed5R88-R92
@@ -1371,10 +1367,6 @@ class Unit:
         :param queue:
         """
         return self(AbilityId.MOVE_MOVE, target=position, queue=queue)
-
-    def scan_move(self, *args, **kwargs) -> Union[UnitCommand, bool]:
-        """ Deprecated: This ability redirects to 'AbilityId.ATTACK' """
-        return self(AbilityId.SCAN_MOVE, *args, **kwargs)
 
     def hold_position(self, queue: bool = False) -> Union[UnitCommand, bool]:
         """ Orders a unit to stop moving. It will not move until it gets new orders.
