@@ -222,7 +222,8 @@ class Units(list):
                 )
                 ** 0.5
             )
-        return min(self._bot_object._distance_units_to_pos(self, position))
+        return min(self._bot_object._distance_squared_units_to_pos(self,
+            position)) ** 0.5
 
     def furthest_distance_to(
         self, position: Union[Unit, Point2, Point3]
@@ -251,7 +252,8 @@ class Units(list):
                 )
                 ** 0.5
             )
-        return max(self._bot_object._distance_units_to_pos(self, position))
+        return max(self._bot_object._distance_squared_units_to_pos(self,
+            position)) ** 0.5
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -391,9 +393,14 @@ class Units(list):
                     unit, position
                 )
             )
-        distances = self._bot_object._distance_units_to_pos(self, position)
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position
+        )
+
         return self.subgroup(
-            unit for unit, dist in zip(self, distances) if distance < dist
+            unit
+            for unit, dist in zip(self, distances)
+            if dist > distance_squared
         )
 
     def in_distance_of_group(
@@ -431,78 +438,6 @@ class Units(list):
                 < distance_squared
                 for other_unit in other_units
             )
-        )
-
-    def in_closest_distance_to_group(self, other_units: Units) -> Unit:
-        """
-        Returns unit in shortest distance from any unit in self to any unit in group.
-
-        Loops over all units in self, then loops over all units in other_units and calculates the shortest distance. Returns the units that is closest to any unit of 'other_units'.
-
-        :param other_units:"""
-        assert self, "Units object is empty"
-        assert other_units, "Given units object is empty"
-        return min(
-            self,
-            key=lambda self_unit: min(
-                self._bot_object._distance_squared_unit_to_unit(
-                    self_unit, other_unit
-                )
-                for other_unit in other_units
-            ),
-        )
-
-    def _list_sorted_closest_to_distance(
-        self, position: Union[Unit, Point2], distance: float
-    ) -> List[Unit]:
-        """ This function should be a bit faster than using units.sorted(key=lambda u: u.distance_to(position)) """
-        if isinstance(position, Unit):
-            return sorted(
-                self,
-                key=lambda unit: abs(
-                    self._bot_object._distance_squared_unit_to_unit(
-                        unit, position
-                    )
-                    - distance
-                ),
-                reverse=True,
-            )
-        distances = self._bot_object._distance_units_to_pos(self, position)
-        unit_dist_dict = {
-            unit.tag: dist for unit, dist in zip(self, distances)
-        }
-        return sorted(
-            self,
-            key=lambda unit2: abs(unit_dist_dict[unit2.tag] - distance),
-            reverse=True,
-        )
-
-    def n_closest_to_distance(
-        self,
-        position: Union[Point2, np.ndarray],
-        distance: Union[int, float],
-        n: int,
-    ) -> Units:
-        """Returns n units that are the closest to distance away.
-        For example if the distance is set to 5 and you want 3 units, from units with distance [3, 4, 5, 6, 7] to position,
-        the units with distance [4, 5, 6] will be returned"""
-        return self.subgroup(
-            self._list_sorted_closest_to_distance(
-                position=position, distance=distance
-            )[:n]
-        )
-
-    def n_furthest_to_distance(
-        self,
-        position: Union[Point2, np.ndarray],
-        distance: Union[int, float],
-        n: int,
-    ) -> Units:
-        """ Inverse of the function 'n_closest_to_distance', returns the furthest units instead """
-        return self.subgroup(
-            self._list_sorted_closest_to_distance(
-                position=position, distance=distance
-            )[-n:]
         )
 
     def subgroup(self, units):

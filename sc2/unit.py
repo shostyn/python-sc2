@@ -550,22 +550,30 @@ class Unit:
             return self._bot_object._distance_squared_unit_to_unit(self, p)
         return self._bot_object.distance_math_hypot_squared(self.position_tuple, p)
 
+    def range_vs_target(self, target: Unit) -> float:
+        """Range unit has against target unit type
+        Returns 0 if unit is unable to attack target
+
+        :param target:"""
+        # TODO: immovable units may have less range than this
+        if self.can_attack_ground and not target.is_flying:
+            unit_attack_range = self.ground_range
+        elif (self.can_attack_air
+                and (target.is_flying or target.type_id == UnitTypeId.COLOSSUS):
+            unit_attack_range = self.air_range
+        else:
+            return 0
+        return unit_attack_range + self.radius + target.radius
+
     def target_in_range(self, target: Unit, bonus_distance: float = 0) -> bool:
         """Checks if the target is in range.
         Includes the target's radius when calculating distance to target.
 
         :param target:
         :param bonus_distance:"""
-        # TODO: Fix this because immovable units (sieged tank, planetary fortress etc.) have a little lower range than this formula
-        if self.can_attack_ground and not target.is_flying:
-            unit_attack_range = self.ground_range
-        elif self.can_attack_air and (target.is_flying or target.type_id == UNIT_COLOSSUS):
-            unit_attack_range = self.air_range
-        else:
-            return False
         return (
             self._bot_object._distance_squared_unit_to_unit(self, target)
-            <= (self.radius + target.radius + unit_attack_range + bonus_distance) ** 2
+            <= (self.range_vs_target(target) + bonus_distance) ** 2
         )
 
     def in_ability_cast_range(

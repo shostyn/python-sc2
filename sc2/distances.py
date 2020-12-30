@@ -105,6 +105,7 @@ class DistanceCalculation:
             [pos], [unit.position_tuple for unit in units], "sqeuclidean"
         )[0]
 
+    '''
     def _distance_units_to_pos(
         self, units: Units, pos: Tuple[float, float]
     ) -> Generator[float, None, None]:
@@ -116,4 +117,4 @@ class DistanceCalculation:
     ) -> Generator[float, None, None]:
         """ This function does not scale well, if len(points) > 100 it gets fairly slow """
         pos = unit.position_tuple
-        return (self.distance_math_hypot(p, pos) for p in points)
+        return (self.distance_math_hypot(p, pos) for p in points)'''
