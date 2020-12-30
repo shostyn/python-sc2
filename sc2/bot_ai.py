@@ -472,7 +472,7 @@ class BotAI(DistanceCalculation):
 
             startp = self._game_info.player_start_location
             d = await self._client.query_pathing(startp, el)
-            if d is None:
+            if d == 0:
                 continue
 
             if d < distance:

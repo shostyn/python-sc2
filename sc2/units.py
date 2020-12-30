@@ -511,12 +511,12 @@ class Units(list):
             self, position
         )
 
-        dist_pair = zip(distances, self)
+        dist_pair = zip(self, distances)
         return self.subgroup(
             [
                 unit
-                for _, unit in sorted(
-                    dist_pair, key=lambda x: x[0], reverse=reverse
+                for unit, _ in sorted(
+                    dist_pair, key=lambda x: x[1], reverse=reverse
                 )
             ]
         )
