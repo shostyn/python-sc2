@@ -3,7 +3,18 @@ import random
 import warnings
 import math
 from itertools import chain
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union, Generator, TYPE_CHECKING
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+    Generator,
+    TYPE_CHECKING,
+)
 
 import numpy as np
 from scipy.spatial.distance import cdist
@@ -49,7 +60,12 @@ class Units(list):
         return Units(
             chain(
                 iter(self),
-                (other_unit for other_unit in other if other_unit.tag not in (self_unit.tag for self_unit in self)),
+                (
+                    other_unit
+                    for other_unit in other
+                    if other_unit.tag
+                    not in (self_unit.tag for self_unit in self)
+                ),
             ),
             self._bot_object,
         )
@@ -58,20 +74,34 @@ class Units(list):
         return Units(
             chain(
                 iter(self),
-                (other_unit for other_unit in other if other_unit.tag not in (self_unit.tag for self_unit in self)),
+                (
+                    other_unit
+                    for other_unit in other
+                    if other_unit.tag
+                    not in (self_unit.tag for self_unit in self)
+                ),
             ),
             self._bot_object,
         )
 
     def __and__(self, other: Units) -> Units:
         return Units(
-            (other_unit for other_unit in other if other_unit.tag in (self_unit.tag for self_unit in self)),
+            (
+                other_unit
+                for other_unit in other
+                if other_unit.tag in (self_unit.tag for self_unit in self)
+            ),
             self._bot_object,
         )
 
     def __sub__(self, other: Units) -> Units:
         return Units(
-            (self_unit for self_unit in self if self_unit.tag not in (other_unit.tag for other_unit in other)),
+            (
+                self_unit
+                for self_unit in self
+                if self_unit.tag
+                not in (other_unit.tag for other_unit in other)
+            ),
             self._bot_object,
         )
 
@@ -137,7 +167,9 @@ class Units(list):
     #     unit_positions_np = np.fromiter(flat_units_positions, dtype=float, count=2 * len(self)).reshape((len(self), 2))
     #     return unit_positions_np
 
-    def in_attack_range_of(self, unit: Unit, bonus_distance: Union[int, float] = 0) -> Units:
+    def in_attack_range_of(
+        self, unit: Unit, bonus_distance: Union[int, float] = 0
+    ) -> Units:
         """
         Filters units that are in attack range of the given unit.
         This uses the unit and target unit.radius when calculating the distance, so it should be accurate.
@@ -159,10 +191,14 @@ class Units(list):
                 # Is empty because mutalisk are flying and marauder cannot attack air
 
         :param unit:
-        :param bonus_distance: """
-        return self.filter(lambda x: unit.target_in_range(x, bonus_distance=bonus_distance))
+        :param bonus_distance:"""
+        return self.filter(
+            lambda x: unit.target_in_range(x, bonus_distance=bonus_distance)
+        )
 
-    def closest_distance_to(self, position: Union[Unit, Point2, Point3]) -> float:
+    def closest_distance_to(
+        self, position: Union[Unit, Point2, Point3]
+    ) -> float:
         """
         Returns the distance between the closest unit from this group to the target unit.
 
@@ -174,13 +210,23 @@ class Units(list):
                 closest_zergling_distance = enemy_zerglings.closest_distance_to(my_marine)
             # Contains the distance between the marine and the closest zergling
 
-        :param position: """
+        :param position:"""
         assert self, "Units object is empty"
         if isinstance(position, Unit):
-            return min(self._bot_object._distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
+            return (
+                min(
+                    self._bot_object._distance_squared_unit_to_unit(
+                        unit, position
+                    )
+                    for unit in self
+                )
+                ** 0.5
+            )
         return min(self._bot_object._distance_units_to_pos(self, position))
 
-    def furthest_distance_to(self, position: Union[Unit, Point2, Point3]) -> float:
+    def furthest_distance_to(
+        self, position: Union[Unit, Point2, Point3]
+    ) -> float:
         """
         Returns the distance between the furthest unit from this group to the target unit
 
@@ -193,10 +239,18 @@ class Units(list):
                 furthest_zergling_distance = enemy_zerglings.furthest_distance_to(my_marine)
                 # Contains the distance between the marine and the furthest away zergling
 
-        :param position: """
+        :param position:"""
         assert self, "Units object is empty"
         if isinstance(position, Unit):
-            return max(self._bot_object._distance_squared_unit_to_unit(unit, position) for unit in self) ** 0.5
+            return (
+                max(
+                    self._bot_object._distance_squared_unit_to_unit(
+                        unit, position
+                    )
+                    for unit in self
+                )
+                ** 0.5
+            )
         return max(self._bot_object._distance_units_to_pos(self, position))
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
@@ -211,15 +265,18 @@ class Units(list):
                 closest_zergling = enemy_zerglings.closest_to(my_marine)
                 # Contains the zergling that is closest to the target marine
 
-        :param position: """
+        :param position:"""
         assert self, "Units object is empty"
         if isinstance(position, Unit):
             return min(
                 (unit1 for unit1 in self),
-                key=lambda unit2: self._bot_object._distance_squared_unit_to_unit(unit2, position),
+                key=lambda unit2: self._bot_object._distance_squared_unit_to_unit(
+                    unit2, position
+                ),
             )
-        distances = self._bot_object._distance_squared_units_to_pos(self,
-                position)
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position
+        )
 
         return self[distances.argmin()]
 
@@ -235,20 +292,27 @@ class Units(list):
                 furthest_zergling = enemy_zerglings.furthest_to(my_marine)
                 # Contains the zergling that is furthest away to the target marine
 
-        :param position: """
+        :param position:"""
         assert self, "Units object is empty"
         if isinstance(position, Unit):
             return max(
                 (unit1 for unit1 in self),
-                key=lambda unit2: self._bot_object._distance_squared_unit_to_unit(unit2, position),
+                key=lambda unit2: self._bot_object._distance_squared_unit_to_unit(
+                    unit2, position
+                ),
             )
 
-        distances = self._bot_object._distance_squared_units_to_pos(self,
-                position)
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position
+        )
         return self[distances.argmax()]
 
-    def closer_than(self, distance: Union[int, float], position: Union[Unit,
-            Point2, Point3], include_radius=False) -> Units:
+    def closer_than(
+        self,
+        distance: Union[int, float],
+        position: Union[Unit, Point2, Point3],
+        include_radius=False,
+    ) -> Units:
         """
         Returns all units (from this Units object) that are closer than 'distance' away from target unit or position.
 
@@ -268,21 +332,39 @@ class Units(list):
         distance_squared = distance ** 2
         if isinstance(position, Unit):
             if include_radius:
-                return self.subgroup(unit for unit in self if
-                        self._bot_object._distance_squared_unit_to_unit(unit,
-                            position) < distance_squared + unit.radius ** 2)
+                return self.subgroup(
+                    unit
+                    for unit in self
+                    if self._bot_object._distance_squared_unit_to_unit(
+                        unit, position
+                    )
+                    < distance_squared + unit.radius ** 2
+                )
             else:
-                return self.subgroup(unit for unit in self if
-                        self._bot_object._distance_squared_unit_to_unit(unit,
-                            position) < distance_squared)
+                return self.subgroup(
+                    unit
+                    for unit in self
+                    if self._bot_object._distance_squared_unit_to_unit(
+                        unit, position
+                    )
+                    < distance_squared
+                )
 
-        distances = self._bot_object._distance_squared_units_to_pos(self,
-                position)
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position
+        )
 
-        return self.subgroup(unit for unit, dist in zip(self, distances) if
-                dist < distance_squared)
+        return self.subgroup(
+            unit
+            for unit, dist in zip(self, distances)
+            if dist < distance_squared
+        )
 
-    def further_than(self, distance: Union[int, float], position: Union[Unit, Point2, Point3]) -> Units:
+    def further_than(
+        self,
+        distance: Union[int, float],
+        position: Union[Unit, Point2, Point3],
+    ) -> Units:
         """
         Returns all units (from this Units object) that are further than 'distance' away from target unit or position.
 
@@ -304,84 +386,20 @@ class Units(list):
             return self.subgroup(
                 unit
                 for unit in self
-                if distance_squared < self._bot_object._distance_squared_unit_to_unit(unit, position)
+                if distance_squared
+                < self._bot_object._distance_squared_unit_to_unit(
+                    unit, position
+                )
             )
         distances = self._bot_object._distance_units_to_pos(self, position)
-        return self.subgroup(unit for unit, dist in zip(self, distances) if distance < dist)
+        return self.subgroup(
+            unit for unit, dist in zip(self, distances) if distance < dist
+        )
 
-    def in_distance_between(
-        self, position: Union[Unit, Point2, Tuple[float, float]], distance1: float, distance2: float
+    def in_distance_of_group(
+        self, other_units: Units, distance: float
     ) -> Units:
-        """
-        Returns units that are further than distance1 and closer than distance2 to unit or position.
-
-        Example::
-
-            enemy_zerglings = self.enemy_units(UnitTypeId.ZERGLING)
-            my_marine = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARINE), None)
-            if my_marine:
-                zerglings_filtered = enemy_zerglings.in_distance_between(my_marine, 3, 5)
-                # Contains all zerglings that are between distance 3 and 5 away from the marine (does not include unit radius in calculation)
-
-        :param position:
-        :param distance1:
-        :param distance2:
-        """
-        if not self:
-            return self
-        if isinstance(position, Unit):
-            distance1_squared = distance1 ** 2
-            distance2_squared = distance2 ** 2
-            return self.subgroup(
-                unit
-                for unit in self
-                if distance1_squared
-                < self._bot_object._distance_squared_unit_to_unit(unit, position)
-                < distance2_squared
-            )
-        distances = self._bot_object._distance_units_to_pos(self, position)
-        return self.subgroup(unit for unit, dist in zip(self, distances) if distance1 < dist < distance2)
-
-    def closest_n_units(self, position: Union[Unit, Point2], n: int) -> Units:
-        """
-        Returns the n closest units in distance to position.
-
-        Example::
-
-            enemy_zerglings = self.enemy_units(UnitTypeId.ZERGLING)
-            my_marine = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARINE), None)
-            if my_marine:
-                zerglings_filtered = enemy_zerglings.closest_n_units(my_marine, 5)
-                # Contains 5 zerglings that are the closest to the marine
-
-        :param position:
-        :param n:
-        """
-        if not self:
-            return self
-        return self.subgroup(self._list_sorted_by_distance_to(position)[:n])
-
-    def furthest_n_units(self, position: Union[Unit, Point2, np.ndarray], n: int) -> Units:
-        """
-        Returns the n furhest units in distance to position.
-
-        Example::
-
-            enemy_zerglings = self.enemy_units(UnitTypeId.ZERGLING)
-            my_marine = next((unit for unit in self.units if unit.type_id == UnitTypeId.MARINE), None)
-            if my_marine:
-                zerglings_filtered = enemy_zerglings.furthest_n_units(my_marine, 5)
-                # Contains 5 zerglings that are the furthest to the marine
-
-        :param position:
-        :param n:
-        """
-        if not self:
-            return self
-        return self.subgroup(self._list_sorted_by_distance_to(position)[-n:])
-
-    def in_distance_of_group(self, other_units: Units, distance: float) -> Units:
-        """ Returns units that are closer than distance from any unit in the other units object.
+        """Returns units that are closer than distance from any unit in the other units object.
 
         :param other_units:
         :param distance:
@@ -393,7 +411,10 @@ class Units(list):
         distance_squared = distance ** 2
         if len(self) == 1:
             if any(
-                self._bot_object._distance_squared_unit_to_unit(self[0], target) < distance_squared
+                self._bot_object._distance_squared_unit_to_unit(
+                    self[0], target
+                )
+                < distance_squared
                 for target in other_units
             ):
                 return self
@@ -404,7 +425,10 @@ class Units(list):
             self_unit
             for self_unit in self
             if any(
-                self._bot_object._distance_squared_unit_to_unit(self_unit, other_unit) < distance_squared
+                self._bot_object._distance_squared_unit_to_unit(
+                    self_unit, other_unit
+                )
+                < distance_squared
                 for other_unit in other_units
             )
         )
@@ -415,43 +439,77 @@ class Units(list):
 
         Loops over all units in self, then loops over all units in other_units and calculates the shortest distance. Returns the units that is closest to any unit of 'other_units'.
 
-        :param other_units: """
+        :param other_units:"""
         assert self, "Units object is empty"
         assert other_units, "Given units object is empty"
         return min(
             self,
             key=lambda self_unit: min(
-                self._bot_object._distance_squared_unit_to_unit(self_unit, other_unit) for other_unit in other_units
+                self._bot_object._distance_squared_unit_to_unit(
+                    self_unit, other_unit
+                )
+                for other_unit in other_units
             ),
         )
 
-    def _list_sorted_closest_to_distance(self, position: Union[Unit, Point2], distance: float) -> List[Unit]:
+    def _list_sorted_closest_to_distance(
+        self, position: Union[Unit, Point2], distance: float
+    ) -> List[Unit]:
         """ This function should be a bit faster than using units.sorted(key=lambda u: u.distance_to(position)) """
         if isinstance(position, Unit):
             return sorted(
                 self,
-                key=lambda unit: abs(self._bot_object._distance_squared_unit_to_unit(unit, position) - distance),
+                key=lambda unit: abs(
+                    self._bot_object._distance_squared_unit_to_unit(
+                        unit, position
+                    )
+                    - distance
+                ),
                 reverse=True,
             )
         distances = self._bot_object._distance_units_to_pos(self, position)
-        unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
-        return sorted(self, key=lambda unit2: abs(unit_dist_dict[unit2.tag] - distance), reverse=True)
+        unit_dist_dict = {
+            unit.tag: dist for unit, dist in zip(self, distances)
+        }
+        return sorted(
+            self,
+            key=lambda unit2: abs(unit_dist_dict[unit2.tag] - distance),
+            reverse=True,
+        )
 
-    def n_closest_to_distance(self, position: Union[Point2, np.ndarray], distance: Union[int, float], n: int) -> Units:
-        """ Returns n units that are the closest to distance away.
+    def n_closest_to_distance(
+        self,
+        position: Union[Point2, np.ndarray],
+        distance: Union[int, float],
+        n: int,
+    ) -> Units:
+        """Returns n units that are the closest to distance away.
         For example if the distance is set to 5 and you want 3 units, from units with distance [3, 4, 5, 6, 7] to position,
-        the units with distance [4, 5, 6] will be returned """
-        return self.subgroup(self._list_sorted_closest_to_distance(position=position, distance=distance)[:n])
+        the units with distance [4, 5, 6] will be returned"""
+        return self.subgroup(
+            self._list_sorted_closest_to_distance(
+                position=position, distance=distance
+            )[:n]
+        )
 
-    def n_furthest_to_distance(self, position: Union[Point2, np.ndarray], distance: Union[int, float], n: int) -> Units:
+    def n_furthest_to_distance(
+        self,
+        position: Union[Point2, np.ndarray],
+        distance: Union[int, float],
+        n: int,
+    ) -> Units:
         """ Inverse of the function 'n_closest_to_distance', returns the furthest units instead """
-        return self.subgroup(self._list_sorted_closest_to_distance(position=position, distance=distance)[-n:])
+        return self.subgroup(
+            self._list_sorted_closest_to_distance(
+                position=position, distance=distance
+            )[-n:]
+        )
 
     def subgroup(self, units):
         """
         Creates a new mutable Units object from Units or list object.
 
-        :param units: """
+        :param units:"""
         return Units(units, self._bot_object)
 
     def filter(self, pred: callable) -> Units:
@@ -481,45 +539,57 @@ class Units(list):
     def sorted(self, key: callable, reverse: bool = False) -> Units:
         return self.subgroup(sorted(self, key=key, reverse=reverse))
 
-    def _list_sorted_by_distance_to(self, position: Union[Unit, Point2], reverse: bool = False) -> List[Unit]:
-        """ This function should be a bit faster than using units.sorted(key=lambda u: u.distance_to(position)) """
-        if isinstance(position, Unit):
-            return sorted(
-                self, key=lambda unit: self._bot_object._distance_squared_unit_to_unit(unit, position), reverse=reverse
-            )
-        distances = self._bot_object._distance_units_to_pos(self, position)
-        unit_dist_dict = {unit.tag: dist for unit, dist in zip(self, distances)}
-        return sorted(self, key=lambda unit2: unit_dist_dict[unit2.tag], reverse=reverse)
-
-    def sorted_by_distance_to(self, position: Union[Unit, Point2], reverse:
-            bool = False, include_radius = False) -> Units:
+    def sorted_by_distance_to(
+        self,
+        position: Union[Unit, Point2],
+        reverse: bool = False,
+        include_radius=False,
+    ) -> Units:
         """ Returns a new Units object sorted to position (fast)"""
         if not self:
             return self
 
         if isinstance(position, Unit):
             if include_radius:
-                return self.subgroup(sorted(self,
-                    key=lambda unit:
-                    self._bot_object._distance_squared_unit_to_unit(
-                        unit, position) + unit.radius ** 2, reverse=reverse))
+                return self.subgroup(
+                    sorted(
+                        self,
+                        key=lambda unit: self._bot_object._distance_squared_unit_to_unit(
+                            unit, position
+                        )
+                        + unit.radius ** 2,
+                        reverse=reverse,
+                    )
+                )
             else:
-                return self.subgroup(sorted(self,
-                    key=lambda unit:
-                    self._bot_object._distance_squared_unit_to_unit(
-                        unit, position), reverse=reverse))
+                return self.subgroup(
+                    sorted(
+                        self,
+                        key=lambda unit: self._bot_object._distance_squared_unit_to_unit(
+                            unit, position
+                        ),
+                        reverse=reverse,
+                    )
+                )
 
-        distances = self._bot_object._distance_squared_units_to_pos(self,
-                position)
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position
+        )
 
         dist_pair = zip(distances, self)
         return self.subgroup(
-                [unit for _, unit in sorted(dist_pair,
-                                            key=lambda x: x[0],
-                                            reverse=reverse)])
+            [
+                unit
+                for _, unit in sorted(
+                    dist_pair, key=lambda x: x[0], reverse=reverse
+                )
+            ]
+        )
 
-    def tags_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> Units:
-        """ Filters all units that have their tags in the 'other' set/list/dict
+    def tags_in(
+        self, other: Union[Set[int], List[int], Dict[int, Any]]
+    ) -> Units:
+        """Filters all units that have their tags in the 'other' set/list/dict
 
         Example::
 
@@ -532,7 +602,9 @@ class Units(list):
         """
         return self.filter(lambda unit: unit.tag in other)
 
-    def tags_not_in(self, other: Union[Set[int], List[int], Dict[int, Any]]) -> Units:
+    def tags_not_in(
+        self, other: Union[Set[int], List[int], Dict[int, Any]]
+    ) -> Units:
         """
         Filters all units that have their tags not in the 'other' set/list/dict
 
@@ -547,7 +619,15 @@ class Units(list):
         """
         return self.filter(lambda unit: unit.tag not in other)
 
-    def of_type(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> Units:
+    def of_type(
+        self,
+        other: Union[
+            UnitTypeId,
+            Set[UnitTypeId],
+            List[UnitTypeId],
+            Dict[UnitTypeId, Any],
+        ],
+    ) -> Units:
         """
         Filters all units that are of a specific type
 
@@ -556,14 +636,22 @@ class Units(list):
             # Use a set instead of lists in the argument
             some_attack_units = self.units.of_type({ZERGLING, ROACH, HYDRALISK, BROODLORD})
 
-        :param other: """
+        :param other:"""
         if isinstance(other, UnitTypeId):
             other = {other}
         elif isinstance(other, list):
             other = set(other)
         return self.filter(lambda unit: unit.type_id in other)
 
-    def exclude_type(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> Units:
+    def exclude_type(
+        self,
+        other: Union[
+            UnitTypeId,
+            Set[UnitTypeId],
+            List[UnitTypeId],
+            Dict[UnitTypeId, Any],
+        ],
+    ) -> Units:
         """
         Filters all units that are not of a specific type
 
@@ -572,7 +660,7 @@ class Units(list):
             # Use a set instead of lists in the argument
             ignore_units = self.enemy_units.exclude_type({LARVA, EGG, OVERLORD})
 
-        :param other: """
+        :param other:"""
         if isinstance(other, UnitTypeId):
             other = {other}
         elif isinstance(other, list):
@@ -614,10 +702,21 @@ class Units(list):
                 tech_alias_types.add(same)
         return self.filter(
             lambda unit: unit._proto.unit_type in tech_alias_types
-            or any(same in tech_alias_types for same in unit._type_data._proto.tech_alias)
+            or any(
+                same in tech_alias_types
+                for same in unit._type_data._proto.tech_alias
+            )
         )
 
-    def same_unit(self, other: Union[UnitTypeId, Set[UnitTypeId], List[UnitTypeId], Dict[UnitTypeId, Any]]) -> Units:
+    def same_unit(
+        self,
+        other: Union[
+            UnitTypeId,
+            Set[UnitTypeId],
+            List[UnitTypeId],
+            Dict[UnitTypeId, Any],
+        ],
+    ) -> Units:
         """
         Returns all units that have the same base unit while being in different modes.
 
@@ -656,7 +755,10 @@ class Units(list):
         assert self, f"Units object is empty"
         amount = self.amount
         return Point2(
-            (sum(unit._proto.pos.x for unit in self) / amount, sum(unit._proto.pos.y for unit in self) / amount,)
+            (
+                sum(unit._proto.pos.x for unit in self) / amount,
+                sum(unit._proto.pos.y for unit in self) / amount,
+            )
         )
 
     @property
@@ -711,8 +813,8 @@ class Units(list):
 
     @property
     def visible(self) -> Units:
-        """ Returns all units or structures that are visible.
-        TODO: add proper description on which units are exactly visible (not snapshots?) """
+        """Returns all units or structures that are visible.
+        TODO: add proper description on which units are exactly visible (not snapshots?)"""
         return self.filter(lambda unit: unit.is_visible)
 
     @property
@@ -734,10 +836,18 @@ class Units(list):
 class UnitSelection(Units):
     def __init__(self, parent, selection=None):
         if isinstance(selection, (UnitTypeId)):
-            super().__init__((unit for unit in parent if unit.type_id == selection), parent._bot_object)
+            super().__init__(
+                (unit for unit in parent if unit.type_id == selection),
+                parent._bot_object,
+            )
         elif isinstance(selection, set):
-            assert all(isinstance(t, UnitTypeId) for t in selection), f"Not all ids in selection are of type UnitTypeId"
-            super().__init__((unit for unit in parent if unit.type_id in selection), parent._bot_object)
+            assert all(
+                isinstance(t, UnitTypeId) for t in selection
+            ), f"Not all ids in selection are of type UnitTypeId"
+            super().__init__(
+                (unit for unit in parent if unit.type_id in selection),
+                parent._bot_object,
+            )
         elif selection is None:
             super().__init__((unit for unit in parent), parent._bot_object)
         else:

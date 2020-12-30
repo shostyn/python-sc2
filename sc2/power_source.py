@@ -1,3 +1,5 @@
+from scipy.spatial.distance import cdist
+
 from .position import Point2
 
 
@@ -29,4 +31,13 @@ class PsionicMatrix:
         self.sources = sources
 
     def covers(self, position):
-        return any(source.covers(position) for source in self.sources)
+        distances = cdist(
+            [position],
+            [source.position for source in self.sources],
+            "sqeuclidian",
+        )[0]
+
+        return any(
+            dist < source.radius ** 2
+            for dist, source in zip(distances, self.sources)
+        )

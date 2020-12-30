@@ -1497,9 +1497,6 @@ class Unit:
         subtract_supply: bool = False,
         can_afford_check: bool = False,
     ) -> Union[UnitCommand, bool]:
-        """ Deprecated: Stop using self.do() - This may be removed in the future. """
-        if self._bot_object.unit_command_uses_self_do:
-            return UnitCommand(ability, self, target=target, queue=queue)
         expected_target: int = self._bot_object.game_data.abilities[ability.value]._proto.target
         # 1: None, 2: Point, 3: Unit, 4: PointOrUnit, 5: PointOrNone
         if target is None and expected_target not in {1, 5}:
