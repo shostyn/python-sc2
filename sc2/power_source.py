@@ -31,10 +31,15 @@ class PsionicMatrix:
         self.sources = sources
 
     def covers(self, position):
+        """Returns true if any power source covers position"""
+
+        if not self.sources:
+            return False
+
         distances = cdist(
             [position],
             [source.position for source in self.sources],
-            "sqeuclidian",
+            "sqeuclidean",
         )[0]
 
         return any(

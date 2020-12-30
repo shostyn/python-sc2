@@ -78,9 +78,6 @@ class BotAI(DistanceCalculation):
             # Prevent overwriting the opponent_id which is set here https://github.com/Hannessa/python-sc2-ladderbot/blob/master/__init__.py#L40
             # otherwise set it to None
             self.opponent_id: str = None
-        # Select distance calculation method, see distances.py: _distances_override_functions function
-        if not hasattr(self, "distance_calculation_method"):
-            self.distance_calculation_method: int = 2
         # This value will be set to True by main.py in self._prepare_start if game is played in realtime (if true, the bot will have limited time per step)
         self.realtime: bool = False
         self.base_build: int = -1
@@ -1220,8 +1217,6 @@ class BotAI(DistanceCalculation):
                 self._game_info.player_races[3 - self.player_id]
             )
 
-        self._distances_override_functions(self.distance_calculation_method)
-
     def _prepare_first_step(self):
         """First step extra preparations. Must not be called before _prepare_step."""
         if self.townhalls:
@@ -1395,10 +1390,7 @@ class BotAI(DistanceCalculation):
                         self.enemy_units.append(unit_obj)
 
         # Force distance calculation and caching on all units using scipy pdist or cdist
-        if self.distance_calculation_method == 1:
-            _ = self._pdist
-        elif self.distance_calculation_method in {2, 3}:
-            _ = self._cdist
+        _ = self._cdist
 
     async def _after_step(self) -> int:
         """ Executed by main.py after each on_step function. """

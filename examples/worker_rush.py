@@ -12,7 +12,7 @@ class WorkerRushBot(sc2.BotAI):
 
 def main():
     run_game(
-        maps.get("Abyssal Reef LE"),
+        maps.get("EternalEmpireLE"),
         [Bot(Race.Zerg, WorkerRushBot()), Computer(Race.Protoss, Difficulty.Medium)],
         realtime=False,
         save_replay_as="WorkerRush.SC2Replay",
