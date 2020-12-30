@@ -39,7 +39,6 @@ from .constants import (
     IS_REPAIRING,
     IS_DETECTOR,
     UNIT_PHOTONCANNON,
-    UNIT_COLOSSUS,
     SPEED_INCREASE_DICT,
     SPEED_UPGRADE_DICT,
     SPEED_INCREASE_ON_CREEP_DICT,
@@ -559,7 +558,7 @@ class Unit:
         if self.can_attack_ground and not target.is_flying:
             unit_attack_range = self.ground_range
         elif (self.can_attack_air
-                and (target.is_flying or target.type_id == UnitTypeId.COLOSSUS):
+                and (target.is_flying or target.type_id == UnitTypeId.COLOSSUS)):
             unit_attack_range = self.air_range
         else:
             return 0
