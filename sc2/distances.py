@@ -100,7 +100,6 @@ class DistanceCalculation:
     def _distance_squared_units_to_pos(
         self, units: Units, pos: Tuple[float, float]
     ):
-        """ Returns numpy array of square distances from position to units"""
-        return cdist(
-            [pos], [unit.position_tuple for unit in units], "sqeuclidean"
-        )[0]
+        """List of square distances from position to units"""
+        return [self.distance_math_hypot_squared(pos, unit.position_tuple)
+                for unit in units]

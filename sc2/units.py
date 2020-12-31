@@ -276,11 +276,9 @@ class Units(list):
                     unit2, position
                 ),
             )
-        distances = self._bot_object._distance_squared_units_to_pos(
-            self, position
-        )
 
-        return self[distances.argmin()]
+        return sorted(self, key=lambda unit:
+                unit.distance_to_squared(position))[0]
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -304,10 +302,8 @@ class Units(list):
                 ),
             )
 
-        distances = self._bot_object._distance_squared_units_to_pos(
-            self, position
-        )
-        return self[distances.argmax()]
+        return sorted(self, key=lambda unit:
+                unit.distance_to_squared(position))[-1]
 
     def closer_than(
         self,
@@ -352,14 +348,9 @@ class Units(list):
                     < distance_squared
                 )
 
-        distances = self._bot_object._distance_squared_units_to_pos(
-            self, position
-        )
-
         return self.subgroup(
-            unit
-            for unit, dist in zip(self, distances)
-            if dist < distance_squared
+            unit for unit in self
+            if unit.distance_to_squared(position) <= distance_squared
         )
 
     def further_than(
@@ -393,14 +384,10 @@ class Units(list):
                     unit, position
                 )
             )
-        distances = self._bot_object._distance_squared_units_to_pos(
-            self, position
-        )
 
         return self.subgroup(
-            unit
-            for unit, dist in zip(self, distances)
-            if dist > distance_squared
+            unit for unit in self
+            if unit.distance_to_squared(position) > distance_squared
         )
 
     def in_distance_of_group(
@@ -507,18 +494,12 @@ class Units(list):
                     )
                 )
 
-        distances = self._bot_object._distance_squared_units_to_pos(
-            self, position
-        )
-
-        dist_pair = zip(self, distances)
         return self.subgroup(
-            [
-                unit
-                for unit, _ in sorted(
-                    dist_pair, key=lambda x: x[1], reverse=reverse
-                )
-            ]
+            sorted(
+                self,
+                key=lambda unit: unit.distance_to_squared(position) +
+                unit.radius ** 2
+            )
         )
 
     def tags_in(
