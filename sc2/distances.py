@@ -78,7 +78,7 @@ class DistanceCalculation:
     def distance_math_hypot_squared(
         self, p1: Tuple[float, float], p2: Tuple[float, float]
     ):
-        return math.pow(p1[0] - p2[0], 2) + math.pow(p1[1] - p2[1], 2)
+        return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
 
     # Distance calculation using the pre-calculated matrix above
 
@@ -104,17 +104,3 @@ class DistanceCalculation:
         return cdist(
             [pos], [unit.position_tuple for unit in units], "sqeuclidean"
         )[0]
-
-    '''
-    def _distance_units_to_pos(
-        self, units: Units, pos: Tuple[float, float]
-    ) -> Generator[float, None, None]:
-        """ This function does not scale well, if len(units) > 100 it gets fairly slow """
-        return (self.distance_math_hypot(u.position_tuple, pos) for u in units)
-
-    def _distance_unit_to_points(
-        self, unit: Unit, points: Iterable[Tuple[float, float]]
-    ) -> Generator[float, None, None]:
-        """ This function does not scale well, if len(points) > 100 it gets fairly slow """
-        pos = unit.position_tuple
-        return (self.distance_math_hypot(p, pos) for p in points)'''
