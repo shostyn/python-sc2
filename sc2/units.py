@@ -17,7 +17,6 @@ from typing import (
 )
 
 import numpy as np
-from scipy.spatial.distance import cdist
 
 from .ids.unit_typeid import UnitTypeId
 from .position import Point2, Point3
@@ -214,16 +213,17 @@ class Units(list):
         assert self, "Units object is empty"
         if isinstance(position, Unit):
             return (
-                min(
+                math.sqrt(min(
                     self._bot_object._distance_squared_unit_to_unit(
                         unit, position
                     )
                     for unit in self
-                )
-                ** 0.5
+                ))
             )
-        return min(self._bot_object._distance_squared_units_to_pos(self,
-            position)) ** 0.5
+
+        return math.sqrt(np.minimum(
+                self._bot_object._distance_squared_units_to_pos(
+                        self, position)))
 
     def furthest_distance_to(
         self, position: Union[Unit, Point2, Point3]
@@ -244,16 +244,17 @@ class Units(list):
         assert self, "Units object is empty"
         if isinstance(position, Unit):
             return (
-                max(
+                math.sqrt(max(
                     self._bot_object._distance_squared_unit_to_unit(
                         unit, position
                     )
                     for unit in self
-                )
-                ** 0.5
+                ))
             )
-        return max(self._bot_object._distance_squared_units_to_pos(self,
-            position)) ** 0.5
+
+        return math.sqrt(np.maximum(
+                self._bot_object._distance_squared_units_to_pos(
+                        self, position)))
 
     def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -277,8 +278,9 @@ class Units(list):
                 ),
             )
 
-        return sorted(self, key=lambda unit:
-                unit.distance_to_squared(position))[0]
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position)
+        return self[distances.argmin()]
 
     def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
         """
@@ -302,8 +304,9 @@ class Units(list):
                 ),
             )
 
-        return sorted(self, key=lambda unit:
-                unit.distance_to_squared(position))[-1]
+        distances = self._bot_object._distance_squared_units_to_pos(
+            self, position)
+        return self[distances.argmax()]
 
     def closer_than(
         self,
@@ -348,15 +351,26 @@ class Units(list):
                     < distance_squared
                 )
 
+        distances = self._bot_object._distance_squared_units_to_pos(
+                self, position)
+
+        dist_pair = zip(self, distances)
+
+        if include_radius:
+            return self.subgroup(
+                    unit for unit, dist in dist_pair
+                    if dist <= distance_squared + unit.radius ** 2)
+
         return self.subgroup(
-            unit for unit in self
-            if unit.distance_to_squared(position) <= distance_squared
+                unit for unit, dist in dist_pair
+                if dist <= distance_squared
         )
 
     def further_than(
         self,
         distance: Union[int, float],
         position: Union[Unit, Point2, Point3],
+        include_radius = False
     ) -> Units:
         """
         Returns all units (from this Units object) that are further than 'distance' away from target unit or position.
@@ -385,9 +399,19 @@ class Units(list):
                 )
             )
 
+        distances = self._bot_object._distance_squared_units_to_pos(
+                self, position)
+
+        dist_pair = zip(self, distances)
+
+        if include_radius:
+            return self.subgroup(
+                    unit for unit, dist in dist_pair
+                    if dist > distance_squared + unit.radius ** 2)
+
         return self.subgroup(
-            unit for unit in self
-            if unit.distance_to_squared(position) > distance_squared
+                unit for unit, dist in dist_pair
+                if dist > distance_squared
         )
 
     def in_distance_of_group(
@@ -494,13 +518,21 @@ class Units(list):
                     )
                 )
 
+        distances = self._bot_object._distance_squared_units_to_pos(
+                self, position)
+
+        dist_pair = zip(self, distances)
+
+        if include_radius:
+            return self.subgroup(
+                    [unit for unit, dist in sorted(dist_pair,
+                        key=lambda pair: pair[1] + pair[0].radius ** 2,
+                        reverse=reverse)])
+
         return self.subgroup(
-            sorted(
-                self,
-                key=lambda unit: unit.distance_to_squared(position) +
-                unit.radius ** 2
-            )
-        )
+                [unit for unit, dist in sorted(dist_pair,
+                    key=lambda pair: pair[1],
+                    reverse=reverse)])
 
     def tags_in(
         self, other: Union[Set[int], List[int], Dict[int, Any]]

@@ -35,7 +35,6 @@ class DistanceCalculation:
         return self._cached_cdist
 
     def _calculate_distances(self) -> np.ndarray:
-        """ Nearly same as above, but without asserts"""
         self._generated_frame = self.state.game_loop
         flat_positions = (
             coord for unit in self.all_units for coord in unit.position_tuple
@@ -101,5 +100,6 @@ class DistanceCalculation:
         self, units: Units, pos: Tuple[float, float]
     ):
         """List of square distances from position to units"""
-        return [self.distance_math_hypot_squared(pos, unit.position_tuple)
-                for unit in units]
+        return cdist([pos], [unit.position_tuple for unit in units])[0]
+        #return [self.distance_math_hypot_squared(pos, unit.position_tuple)
+        #        for unit in units]
