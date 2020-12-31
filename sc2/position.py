@@ -304,7 +304,7 @@ class Point2(Pointlike):
         return self.__class__((self.x / other, self.y / other))
 
     def is_same_as(self, other: Point2, dist=0.001) -> bool:
-        return self.distance_to_point2(other) <= dist
+        return self.manhattan_distance(other) <= dist
 
     def direction_vector(self, other: Point2) -> Point2:
         """ Converts a vector to a direction that can face vertically, horizontally or diagonal or be zero, e.g. (0, 0), (1, -1), (1, 0) """
