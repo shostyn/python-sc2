@@ -796,9 +796,9 @@ class BotAI(DistanceCalculation):
         self,
         building: UnitTypeId,
         near: Union[Unit, Point2],
-        max_distance: int = 20,
+        max_distance: int = 10,
         random_alternative: bool = True,
-        placement_step: int = 2,
+        placement_step: int = 1,
         addon_place: bool = False,
     ) -> Optional[Point2]:
         """Finds a placement location for building.
