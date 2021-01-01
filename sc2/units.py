@@ -19,7 +19,7 @@ from typing import (
 import numpy as np
 
 from .ids.unit_typeid import UnitTypeId
-from .position import Point2, Point3
+from .position import Point2
 from .unit import Unit
 
 warnings.simplefilter("once")
@@ -196,7 +196,7 @@ class Units(list):
         )
 
     def closest_distance_to(
-        self, position: Union[Unit, Point2, Point3]
+        self, position: Union[Unit, Point2]
     ) -> float:
         """
         Returns the distance between the closest unit from this group to the target unit.
@@ -226,7 +226,7 @@ class Units(list):
                         self, position)))
 
     def furthest_distance_to(
-        self, position: Union[Unit, Point2, Point3]
+        self, position: Union[Unit, Point2]
     ) -> float:
         """
         Returns the distance between the furthest unit from this group to the target unit
@@ -256,7 +256,7 @@ class Units(list):
                 self._bot_object._distance_squared_units_to_pos(
                         self, position)))
 
-    def closest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
+    def closest_to(self, position: Union[Unit, Point2]) -> Unit:
         """
         Returns the closest unit (from this Units object) to the target unit or position.
 
@@ -282,7 +282,7 @@ class Units(list):
             self, position)
         return self[distances.argmin()]
 
-    def furthest_to(self, position: Union[Unit, Point2, Point3]) -> Unit:
+    def furthest_to(self, position: Union[Unit, Point2]) -> Unit:
         """
         Returns the furhest unit (from this Units object) to the target unit or position.
 
@@ -311,7 +311,7 @@ class Units(list):
     def closer_than(
         self,
         distance: Union[int, float],
-        position: Union[Unit, Point2, Point3],
+        position: Union[Unit, Point2],
         include_radius=False,
     ) -> Units:
         """
@@ -369,7 +369,7 @@ class Units(list):
     def further_than(
         self,
         distance: Union[int, float],
-        position: Union[Unit, Point2, Point3],
+        position: Union[Unit, Point2],
         include_radius = False
     ) -> Units:
         """

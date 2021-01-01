@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Tuple, Iterable, Generator
 import warnings
 
@@ -36,9 +37,8 @@ class DistanceCalculation:
 
     def _calculate_distances(self) -> np.ndarray:
         self._generated_frame = self.state.game_loop
-        flat_positions = (
-            coord for unit in self.all_units for coord in unit.position_tuple
-        )
+        flat_positions = chain.from_iterable(
+                unit.position_tuple for unit in self.all_units)
         positions_array: np.ndarray = np.fromiter(
             flat_positions, dtype=np.float, count=2 * self._units_count
         ).reshape((-1, 2))
@@ -100,6 +100,11 @@ class DistanceCalculation:
         self, units: Units, pos: Tuple[float, float]
     ):
         """List of square distances from position to units"""
-        return cdist([pos], [unit.position_tuple for unit in units])[0]
-        #return [self.distance_math_hypot_squared(pos, unit.position_tuple)
-        #        for unit in units]
+        flat_positions = chain.from_iterable(
+                unit.position_tuple for unit in units)
+        positions = np.fromiter(
+                flat_positions,
+                dtype=float,
+                count=len(units) * 2)
+        positions = positions.reshape((-1, 2))
+        return cdist([pos], positions, "sqeuclidean")[0]
