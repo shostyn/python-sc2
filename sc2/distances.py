@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Tuple, Iterable, Generator
+from typing import Tuple
 import warnings
 
 import math
@@ -51,16 +51,6 @@ class DistanceCalculation:
 
     # Helper functions
 
-    def square_to_condensed(self, i, j) -> int:
-        # Converts indices of a square matrix to condensed matrix
-        # https://stackoverflow.com/a/36867493/10882657
-        assert (
-            i != j
-        ), "No diagonal elements in condensed matrix! Diagonal elements are zero"
-        if i < j:
-            i, j = j, i
-        return self._units_count * j - j * (j + 1) // 2 + i - 1 - j
-
     def convert_tuple_to_numpy_array(
         self, pos: Tuple[float, float]
     ) -> np.ndarray:
@@ -79,6 +69,11 @@ class DistanceCalculation:
     ):
         return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
 
+    def _distance_pos_to_pos(
+        self, pos1: Tuple[float, float], pos2: Tuple[float, float]
+    ) -> float:
+        return self.distance_math_hypot(pos1, pos2)
+
     # Distance calculation using the pre-calculated matrix above
 
     def _distance_squared_unit_to_unit(
@@ -89,12 +84,7 @@ class DistanceCalculation:
             unit1.distance_calculation_index, unit2.distance_calculation_index
         ]
 
-    # Distance calculation using the fastest distance calculation functions
-
-    def _distance_pos_to_pos(
-        self, pos1: Tuple[float, float], pos2: Tuple[float, float]
-    ) -> float:
-        return self.distance_math_hypot(pos1, pos2)
+    # Distance calculation using cdist
 
     def _distance_squared_units_to_pos(
         self, units: Units, pos: Tuple[float, float]
