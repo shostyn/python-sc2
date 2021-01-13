@@ -59,6 +59,10 @@ from .data import (
     Target,
     race_gas,
 )
+from .dicts.unit_typeinfo import (
+    TURN_RATE,
+    DAMAGE_POINT,
+)
 from .ids.ability_id import AbilityId
 from .ids.buff_id import BuffId
 from .ids.upgrade_id import UpgradeId
@@ -1273,6 +1277,25 @@ class Unit:
         if self.can_attack:
             return self._proto.weapon_cooldown
         return -1
+
+    @property
+    def turnrate(self) -> float:
+        """ Returns turn speed in radians per second """
+        if self.type_id in TURN_RATE:
+            return TURN_RATE[self.type_id] * math.pi / 180 * 1.4
+
+        print("Turn rate for", self.type_id, "not stored.")
+        return 999.8437 * math.pi / 180 * 1.4
+
+    # TODO: differentiate between weapons ?
+    @property
+    def damagepoint(self) -> float:
+        """ Returns damage point of primary weapon """
+        if self.type_id in DAMAGE_POINT:
+            return DAMAGE_POINT[self.type_id]
+
+        print("Damage point for", self.type_id, "not stored.")
+        return 0.
 
     @property
     def cooldown(self) -> float:
