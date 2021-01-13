@@ -128,14 +128,15 @@ class Pointlike(tuple):
         :param limit:
         """
         p = p.position
-        # assert self != p, f"self is {self}, p is {p}"
-        # TODO test and fix this if statement
-        if self == p:
-            return self
-        # end of test
         d = self.distance_to(p)
+
         if limit:
             distance = min(d, distance)
+        if d == 0:
+            return self.__class__(
+                    val if idx else val + distance for idx, val in
+                    enumerate(self))
+
         return self.__class__(
             a + (b - a) / d * distance for a, b in itertools.zip_longest(self, p[: len(self)], fillvalue=0)
         )
@@ -212,6 +213,14 @@ class Point2(Pointlike):
 
         dx, dy = math.cos(angle), math.sin(angle)
         return Point2((self.x + dx * distance, self.y + dy * distance))
+
+    def towards_angle(
+            self,
+            angle: float,
+            distance: float
+    ) -> Point2:
+        return Point2((self.x + math.cos(angle) * distance,
+                       self.y + math.sin(angle) * distance))
 
     def towards_with_random_angle(
         self,
