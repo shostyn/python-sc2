@@ -15,6 +15,7 @@ from .cache import (
     property_cache_once_per_frame_no_copy,
 )
 from .constants import (
+    worker_types,
     FakeEffectID,
     abilityid_to_unittypeid,
     geyser_ids,
@@ -1300,13 +1301,6 @@ class BotAI(DistanceCalculation):
         self.placeholders: Units = Units([], self)
         self.techlab_tags: Set[int] = set()
         self.reactor_tags: Set[int] = set()
-
-        worker_types: Set[UnitTypeId] = {
-            UnitTypeId.DRONE,
-            UnitTypeId.DRONEBURROWED,
-            UnitTypeId.SCV,
-            UnitTypeId.PROBE,
-        }
 
         index: int = 0
         for unit in self.state.observation_raw.units:

@@ -7,6 +7,13 @@ from .ids.upgrade_id import *
 from collections import defaultdict
 from typing import Dict, Set
 
+
+worker_types: Set[UnitTypeId] = {
+    UnitTypeId.DRONE,
+    UnitTypeId.DRONEBURROWED,
+    UnitTypeId.SCV,
+    UnitTypeId.PROBE,
+}
 mineral_ids: Set[int] = {
     RICHMINERALFIELD.value,
     RICHMINERALFIELD750.value,
