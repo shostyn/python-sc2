@@ -5,6 +5,7 @@ from ..ids.unit_typeid import UnitTypeId
 TURN_RATE: Dict[UnitTypeId, float] = {
     UnitTypeId.STALKER: 999.8437,
     UnitTypeId.ZEALOT: 999.8437,
+    UnitTypeId.ADEPT: 999.8437,
 }
 
 

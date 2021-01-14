@@ -1126,7 +1126,7 @@ class BotAI(DistanceCalculation):
         assert isinstance(
             pos, (Point2, Unit)
         ), f"pos is not of type Point2 or Unit"
-        pos = pos.position.rounded
+        pos = (pos.position - (0.5, 0.5)).rounded
         return self._game_info.placement_grid[pos] == 1
 
     def in_pathing_grid(self, pos: Union[Point2, Unit]) -> bool:
@@ -1136,7 +1136,7 @@ class BotAI(DistanceCalculation):
         assert isinstance(
             pos, (Point2, Unit)
         ), f"pos is not of type Point2 or Unit"
-        pos = pos.position.rounded
+        pos = (pos.position - (0.5, 0.5)).rounded
         return self._game_info.pathing_grid[pos] == 1
 
     def is_visible(self, pos: Union[Point2, Unit]) -> bool:
@@ -1147,7 +1147,7 @@ class BotAI(DistanceCalculation):
         assert isinstance(
             pos, (Point2, Unit)
         ), f"pos is not of type Point2 or Unit"
-        pos = pos.position.rounded
+        pos = (pos.position - (0.5, 0.5)).rounded
         return self.state.visibility[pos] == 2
 
     def has_creep(self, pos: Union[Point2, Unit]) -> bool:
@@ -1157,7 +1157,7 @@ class BotAI(DistanceCalculation):
         assert isinstance(
             pos, (Point2, Unit)
         ), f"pos is not of type Point2 or Unit"
-        pos = pos.position.rounded
+        pos = (pos.position - (0.5, 0.5)).rounded
         return self.state.creep[pos] == 1
 
     def _prepare_start(
