@@ -169,6 +169,10 @@ class Point2(Pointlike):
         return common_pb.PointI(x=self.x, y=self.y)
 
     @property
+    def floored(self) -> Point2:
+        return Point2((int(self[0]), int(self[1])))
+
+    @property
     def rounded(self) -> Point2:
         return Point2((round(self[0]), round(self[1])))
 
