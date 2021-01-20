@@ -80,7 +80,8 @@ class Ramp:
         return set(
             sorted(
                 list(self.upper),
-                key=lambda x: x.distance_to_point2(self.bottom_center),
+                key=lambda x: x.distance_to_point2(
+                    self.bottom_center - (0.5, 0.5)),
                 reverse=True,
             )[:2]
         )
@@ -95,7 +96,7 @@ class Ramp:
                 sum(p.y for p in upper) / length,
             )
         )
-        return pos
+        return pos + (0.5, 0.5)
 
     @property_mutable_cache
     def lower(self) -> Set[Point2]:
@@ -120,7 +121,7 @@ class Ramp:
                 sum(p.y for p in lower) / length,
             )
         )
-        return pos
+        return pos + (0.5, 0.5)
 
     def _same_height_row(self, group):
         for p1 in group:
