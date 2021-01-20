@@ -58,17 +58,16 @@ class Ramp:
 
     @property_mutable_cache
     def upper(self) -> Set[Point2]:
-        """ Returns the upper points of a ramp. """
-        current_max = -10000
-        result = set()
-        for p in self._points:
-            height = self.height_at(p)
-            if height > current_max:
-                current_max = height
-                result = {p}
-            elif height == current_max:
-                result.add(p)
-        return result
+        rows = self._height_rows()
+
+        highest = None
+        height = -10000
+        for row in rows:
+            if self.height_at(Point2.center(row).floored) > height:
+                highest = row
+                height = self.height_at(Point2.center(row).floored)
+
+        return highest
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
@@ -100,16 +99,16 @@ class Ramp:
 
     @property_mutable_cache
     def lower(self) -> Set[Point2]:
-        current_min = 10000
-        result = set()
-        for p in self._points:
-            height = self.height_at(p)
-            if height < current_min:
-                current_min = height
-                result = {p}
-            elif height == current_min:
-                result.add(p)
-        return result
+        rows = self._height_rows()
+
+        lowest = None
+        height = 10000
+        for row in rows:
+            if self.height_at(Point2.center(row).floored) < height:
+                lowest = row
+                height = self.height_at(Point2.center(row).floored)
+
+        return lowest
 
     @property_immutable_cache
     def bottom_center(self) -> Point2:
@@ -122,6 +121,50 @@ class Ramp:
             )
         )
         return pos
+
+    def _same_height_row(self, group):
+        for p1 in group:
+            for p2 in group:
+                if p1 == p2:
+                    continue
+
+                if self.height_at(p1) == self.height_at(p2):
+                    diff = (p2 - p1) / p1.manhattan_distance(p2)
+                    return {
+                        p
+                        for p in group
+                        if (
+                            p in {p1, p2}
+                            or (
+                                p + diff * p.manhattan_distance(p1) == p1
+                                or p - diff * p.manhattan_distance(p1) == p1
+                            )
+                        )
+                    }
+        return None
+
+    def _height_rows(self) -> List[Set[Point2]]:
+        points = list(self._points)
+        groups = []
+        while points:
+            point = points[0]
+
+            group = {
+                p
+                for p in points
+                if (p != point and abs(point.x - p.x) == abs(point.y - p.y))
+            }
+            group.add(point)
+
+            row = self._same_height_row(group)
+            if row:
+                for p in row:
+                    points.remove(p)
+                groups.append(row)
+            else:
+                points.remove(point)
+
+        return groups
 
     @property_immutable_cache
     def barracks_in_middle(self) -> Optional[Point2]:
