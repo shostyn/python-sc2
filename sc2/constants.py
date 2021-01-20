@@ -363,6 +363,7 @@ TERRAN_STRUCTURES_REQUIRE_SCV: Set[UnitTypeId] = {
     UnitTypeId.MISSILETURRET,
     UnitTypeId.REFINERY,
     UnitTypeId.REFINERYRICH,
+    UnitTypeId.SENSORTOWER,
     UnitTypeId.STARPORT,
     UnitTypeId.SUPPLYDEPOT,
 }
