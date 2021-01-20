@@ -1304,7 +1304,7 @@ class BotAI(DistanceCalculation):
                     self._units_created[structure.type_id] += 1
                     await self.on_building_construction_complete(structure)
             elif structure.tag in self._structures_previous_map:
-                # Check if a structure took damage this frame and then trigger event
+                # Check if a structure took damage this frame
                 previous_frame_structure: Unit = self._structures_previous_map[
                     structure.tag
                 ]
@@ -1342,17 +1342,21 @@ class BotAI(DistanceCalculation):
                 await self.on_enemy_unit_entered_vision(enemy_structure)
 
         # Call events for enemy unit left vision
-        if self.enemy_units:
+        if self._enemy_units_previous_map:
             visible_enemy_units = self.enemy_units.tags
             for enemy_unit_tag in self._enemy_units_previous_map.keys():
-                if enemy_unit_tag not in visible_enemy_units:
+                if (enemy_unit_tag not in 
+                        visible_enemy_units | self.state.dead_units):
+
                     await self.on_enemy_unit_left_vision(enemy_unit_tag)
-        if self.enemy_structures:
+        if self._enemy_structures_previous_map:
             visible_enemy_structures = self.enemy_structures.tags
             for (
                 enemy_structure_tag
             ) in self._enemy_structures_previous_map.keys():
-                if enemy_structure_tag not in visible_enemy_structures:
+                if (enemy_structure_tag not in
+                        visible_enemy_structures | self.state.dead_units):
+
                     await self.on_enemy_unit_left_vision(enemy_structure_tag)
 
     async def _issue_unit_dead_events(self):
