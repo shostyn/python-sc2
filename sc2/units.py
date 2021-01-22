@@ -361,10 +361,8 @@ class Units(list):
                     unit for unit, dist in dist_pair
                     if dist <= distance_squared + unit.radius ** 2)
 
-        return self.subgroup(
-                unit for unit, dist in dist_pair
-                if dist <= distance_squared
-        )
+        indices = np.nonzero(distances <= distance_squared)[0]
+        return self.subgroup(self[i] for i in indices)
 
     def further_than(
         self,
@@ -409,10 +407,8 @@ class Units(list):
                     unit for unit, dist in dist_pair
                     if dist > distance_squared + unit.radius ** 2)
 
-        return self.subgroup(
-                unit for unit, dist in dist_pair
-                if dist > distance_squared
-        )
+        indices = np.nonzero(distances > distance_squared)[0]
+        return self.subgroup(self[i] for i in indices)
 
     def in_distance_of_group(
         self, other_units: Units, distance: float
@@ -525,14 +521,14 @@ class Units(list):
 
         if include_radius:
             return self.subgroup(
-                    [unit for unit, dist in sorted(dist_pair,
+                    unit for unit, dist in sorted(dist_pair,
                         key=lambda pair: pair[1] + pair[0].radius ** 2,
-                        reverse=reverse)])
+                        reverse=reverse))
 
         return self.subgroup(
-                [unit for unit, dist in sorted(dist_pair,
+                unit for unit, dist in sorted(dist_pair,
                     key=lambda pair: pair[1],
-                    reverse=reverse)])
+                    reverse=reverse))
 
     def tags_in(
         self, other: Union[Set[int], List[int], Dict[int, Any]]
