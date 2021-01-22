@@ -14,6 +14,7 @@ from typing import (
     Union,
     TYPE_CHECKING,
 )
+import math
 
 import numpy as np
 
@@ -60,14 +61,18 @@ class Ramp:
     def upper(self) -> Set[Point2]:
         rows = self._height_rows()
 
-        highest = None
+        highest_row = None
         height = -10000
         for row in rows:
-            if self.height_at(Point2.center(row).floored) > height:
-                highest = row
-                height = self.height_at(Point2.center(row).floored)
+            row_height = self.height_at(Point2.center(row).floored) 
+            if (row_height > height or 
+                    (row_height == height and
+                        Point2.center(row).distance_to(Point2.center(self._points)) >
+                        Point2.center(highest_row).distance_to(Point2.center(self._points)))):
+                highest_row = row
+                height = row_height
 
-        return highest
+        return highest_row
 
     @property_mutable_cache
     def upper2_for_ramp_wall(self) -> Set[Point2]:
@@ -173,15 +178,8 @@ class Ramp:
         if len(self.upper) not in {2, 5}:
             return None
         if len(self.upper2_for_ramp_wall) == 2:
-            points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))
-            p2 = points.pop().offset((self.x_offset, self.y_offset))
-            # Offset from top point to barracks center is (2, 1)
-            intersects = p1.circle_intersection(p2, 5 ** 0.5)
-            anyLowerPoint = next(iter(self.lower))
-            return max(
-                intersects, key=lambda p: p.distance_to_point2(anyLowerPoint)
-            )
+            return (self.top_center.towards(
+                    self.bottom_center, -(1.5 ** 2 * 2) ** 0.5))
         raise Exception(
             "Not implemented. Trying to access a ramp that has a wrong amount of upper points."
         )
@@ -192,39 +190,27 @@ class Ramp:
         if len(self.upper) not in {2, 5}:
             return None
         if len(self.upper2_for_ramp_wall) == 2:
-            points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))
-            p2 = points.pop().offset((self.x_offset, self.y_offset))
-            # Offset from top point to depot center is (1.5, 0.5)
-            try:
-                intersects = p1.circle_intersection(p2, 2.5 ** 0.5)
-            except AssertionError:
-                # Returns None when no placement was found, this is the case on the map Honorgrounds LE with an exceptionally large main base ramp
-                return None
-            anyLowerPoint = next(iter(self.lower))
-            return max(
-                intersects, key=lambda p: p.distance_to_point2(anyLowerPoint)
-            )
+            return (self.top_center.towards(
+                    self.bottom_center, -(1 ** 2 * 2) ** 0.5))
         raise Exception(
             "Not implemented. Trying to access a ramp that has a wrong amount of upper points."
         )
 
-    @property_mutable_cache
+    @property_immutable_cache
     def corner_depots(self) -> Set[Point2]:
         """ Finds the 2 depot positions on the outside """
-        if not self.upper2_for_ramp_wall:
+        if not self.upper2_for_ramp_wall or not self.depot_in_middle:
+            return None
             return set()
         if len(self.upper2_for_ramp_wall) == 2:
-            points = self.upper2_for_ramp_wall
-            p1 = points.pop().offset((self.x_offset, self.y_offset))
-            p2 = points.pop().offset((self.x_offset, self.y_offset))
-            center = p1.towards(p2, p1.distance_to_point2(p2) / 2)
-            depotPosition = self.depot_in_middle
-            if depotPosition is None:
-                return set()
-            # Offset from middle depot to corner depots is (2, 1)
-            intersects = center.circle_intersection(depotPosition, 5 ** 0.5)
-            return intersects
+            bottom_center = self.bottom_center
+            center_depot = self.depot_in_middle
+            angle = math.atan2(bottom_center.y - center_depot.y,
+                               bottom_center.x - center_depot.x)
+            angle_offset = math.pi * 0.75 + math.atan2(1, -2)
+
+            return {center_depot.towards_angle(angle + angle_offset, 5 ** 0.5),
+                    center_depot.towards_angle(angle - angle_offset, 5 ** 0.5)}
         raise Exception(
             "Not implemented. Trying to access a ramp that has a wrong amount of upper points."
         )

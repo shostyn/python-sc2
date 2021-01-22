@@ -14,7 +14,7 @@ from zerg import zerg_rush
 def main():
     player_config = [Bot(Race.Zerg, zerg_rush.ZergRushBot()), Computer(Race.Terran, Difficulty.Medium)]
 
-    gen = sc2.main._host_game_iter(sc2.maps.get("Abyssal Reef LE"), player_config, realtime=False)
+    gen = sc2.main._host_game_iter(sc2.maps.get("SubmarineLE"), player_config, realtime=False)
 
     r = next(gen)
     while True:
