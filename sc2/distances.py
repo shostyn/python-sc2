@@ -25,12 +25,9 @@ class DistanceCalculation:
         self._cached_cdist: np.ndarray = None
 
     @property
-    def _units_count(self) -> int:
-        return len(self.all_units)
-
-    @property
     def _cdist(self) -> np.ndarray:
-        """ As property, so it will be recalculated each time it is called, or return from cache if it is called multiple times in teh same game_loop. """
+        """ As property, so it will be recalculated each time it is called,
+        or return from cache if it is called multiple times in the same game_loop. """
         if self._generated_frame != self.state.game_loop:
             return self._calculate_distances()
         return self._cached_cdist
@@ -40,7 +37,7 @@ class DistanceCalculation:
         flat_positions = chain.from_iterable(
                 unit.position_tuple for unit in self.all_units)
         positions_array: np.ndarray = np.fromiter(
-            flat_positions, dtype=np.float, count=2 * self._units_count
+            flat_positions, dtype=np.float, count=2 * len(self.all_units)
         ).reshape((-1, 2))
         # See performance benchmarks
         self._cached_cdist = cdist(
@@ -48,14 +45,6 @@ class DistanceCalculation:
         )
 
         return self._cached_cdist
-
-    # Helper functions
-
-    def convert_tuple_to_numpy_array(
-        self, pos: Tuple[float, float]
-    ) -> np.ndarray:
-        """ Converts a single position to a 2d numpy array with 1 row and 2 columns. """
-        return np.fromiter(pos, dtype=float, count=2).reshape((1, 2))
 
     # Fast and simple calculation functions
 
@@ -84,6 +73,15 @@ class DistanceCalculation:
             unit1.distance_calculation_index, unit2.distance_calculation_index
         ]
 
+    def _distance_squared_units_to_unit(
+            self, units: Units, unit: Unit
+    ) -> np.array:
+        indices = np.fromiter(
+                (u.distance_calculation_index for u in units),
+                dtype=np.int,
+                count=len(units))
+        return self._cdist[indices, unit.distance_calculation_index]
+
     # Distance calculation using cdist
 
     def _distance_squared_units_to_pos(
@@ -97,4 +95,4 @@ class DistanceCalculation:
                 dtype=float,
                 count=len(units) * 2)
         positions = positions.reshape((-1, 2))
-        return cdist([pos], positions, "sqeuclidean")[0]
+        return cdist(positions, [pos], "sqeuclidean")
