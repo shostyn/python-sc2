@@ -353,8 +353,12 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     state = await client.observation()
     # Check game result every time we get the observation
     if client._game_result:
-        await ai.on_end(client._game_result[player_id])
-        return client._game_result[player_id]
+        if player_id == 0:
+            result = client._game_result
+        else:
+            result = client._game_result[player_id]
+        await ai.on_end(result)
+        return result
     gs = GameState(state.observation)
     proto_game_info = await client._execute(game_info=sc_pb.RequestGameInfo())
     ai._prepare_step(gs, proto_game_info)
@@ -378,13 +382,17 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
                 state = await client.observation()
             # check game result every time we get the observation
             if client._game_result:
+                if player_id == 0:
+                    result = client._game_result
+                else:
+                    result = client._game_result[player_id]
                 try:
-                    await ai.on_end(client._game_result[player_id])
+                    await ai.on_end(result)
                 except TypeError as error:
                     # print(f"caught type error {error}")
                     # print(f"return {client._game_result[player_id]}")
-                    return client._game_result[player_id]
-                return client._game_result[player_id]
+                    return result
+                return result
             gs = GameState(state.observation)
             logger.debug(f"Score: {gs.score.score}")
 
@@ -559,7 +567,7 @@ async def _host_replay(replay_path, ai, realtime, portconfig, base_build, data_v
         response = await server.ping()
 
         client = await _setup_replay(server, replay_path, realtime, observed_id)
-        result = await _play_replay(client, ai, realtime)
+        result = await _play_replay(client, ai, realtime, observed_id)
         return result
 
 

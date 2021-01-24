@@ -1345,8 +1345,10 @@ class BotAI(DistanceCalculation):
         if self._enemy_units_previous_map:
             visible_enemy_units = self.enemy_units.tags
             for enemy_unit_tag in self._enemy_units_previous_map.keys():
-                if (enemy_unit_tag not in 
-                        visible_enemy_units | self.state.dead_units):
+                if (
+                    enemy_unit_tag
+                    not in visible_enemy_units | self.state.dead_units
+                ):
 
                     await self.on_enemy_unit_left_vision(enemy_unit_tag)
         if self._enemy_structures_previous_map:
@@ -1354,8 +1356,10 @@ class BotAI(DistanceCalculation):
             for (
                 enemy_structure_tag
             ) in self._enemy_structures_previous_map.keys():
-                if (enemy_structure_tag not in
-                        visible_enemy_structures | self.state.dead_units):
+                if (
+                    enemy_structure_tag
+                    not in visible_enemy_structures | self.state.dead_units
+                ):
 
                     await self.on_enemy_unit_left_vision(enemy_structure_tag)
 

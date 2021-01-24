@@ -72,6 +72,21 @@ race_townhalls: Dict[Race, Set[UnitTypeId]] = {
     },
 }
 
+all_townhalls: Set[UnitTypeId] = {
+    # Protoss
+    UnitTypeId.NEXUS,
+    # Terran
+    UnitTypeId.COMMANDCENTER,
+    UnitTypeId.ORBITALCOMMAND,
+    UnitTypeId.PLANETARYFORTRESS,
+    UnitTypeId.COMMANDCENTERFLYING,
+    UnitTypeId.ORBITALCOMMANDFLYING,
+    # Zerg
+    UnitTypeId.HATCHERY,
+    UnitTypeId.LAIR,
+    UnitTypeId.HIVE,
+}
+
 warpgate_abilities: Dict[AbilityId, AbilityId] = {
     AbilityId.GATEWAYTRAIN_ZEALOT: AbilityId.WARPGATETRAIN_ZEALOT,
     AbilityId.GATEWAYTRAIN_STALKER: AbilityId.WARPGATETRAIN_STALKER,
