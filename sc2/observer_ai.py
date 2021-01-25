@@ -1073,8 +1073,7 @@ class ObserverAI(DistanceCalculation):
                         self.structures.append(unit_obj)
                         if unit_id in all_townhalls:
                             self.townhalls.append(unit_obj)
-                        elif unit_id in ALL_GAS or unit_obj.vespene_contents:
-                            # TODO: remove "or unit_obj.vespene_contents" when a new linux client newer than version 4.10.0 is released
+                        elif unit_id in ALL_GAS:
                             self.gas_buildings.append(unit_obj)
                         elif unit_id in {
                             UnitTypeId.TECHLAB,
