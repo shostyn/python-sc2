@@ -2,7 +2,6 @@ from enum import IntEnum
 from typing import Any, Dict, Set
 
 from sc2 import AbilityId, UnitTypeId
-from sc2.bot_ai import BotAI
 from sc2.ids.buff_id import BuffId
 from sc2.ids.upgrade_id import UpgradeId
 
@@ -19,8 +18,8 @@ class GameVersion(IntEnum):
 
 
 class VersionManager:
-    def __init__(self, bot: BotAI):
-        self.bot = BotAI
+    def __init__(self, bot):
+        self.bot = bot
         self.short_version = "0.0.0"
         self.full_version = "0.0.0.12345"
         self.base_version = 12345
