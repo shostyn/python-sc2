@@ -125,17 +125,6 @@ class MyBot(sc2.BotAI):
         self.raw_affects_selection = True
 ```
 
-### `distance_calculation_method`
-The distance calculation method:
-- 0 for raw python
-- 1 for scipy pdist
-- 2 for scipy cdist
-```python
-class MyBot(sc2.BotAI):
-    def __init__(self):
-        self.distance_calculation_method: int = 2
-```
-
 ### `game_step`
 On game start or in any frame actually, you can set the game step. This controls how often your bot's `step` method is called.  
 __Do not set this in the \_\_init\_\_ function as the client will not have been initialized yet!__
