@@ -183,6 +183,7 @@ async def _play_game_ai(client, player_id, ai, realtime, step_time_limit, game_t
         ai._prepare_step(gs, proto_game_info)
         await ai.on_before_start()
         ai._prepare_first_step()
+        await ai.version_manager.handle_game_version()
         await ai.on_start()
     except Exception as e:
         logger.exception(f"AI on_start threw an error")
@@ -364,6 +365,7 @@ async def _play_replay(client, ai, realtime=False, player_id=0):
     ai._prepare_step(gs, proto_game_info)
     ai._prepare_first_step()
     try:
+        await ai.version_manager.handle_game_version()
         await ai.on_start()
     except Exception as e:
         logger.exception(f"AI on_start threw an error")

@@ -57,6 +57,7 @@ from .unit import Unit
 from .units import Units
 from .game_data import Cost
 from .unit_command import UnitCommand
+from .game_version import VersionManager
 
 from loguru import logger
 
@@ -73,6 +74,7 @@ class BotAI(DistanceCalculation):
     def _initialize_variables(self):
         """ Called from main.py internally """
         DistanceCalculation.__init__(self)
+        self.version_manager = VersionManager(self)
         # Specific opponent bot ID used in sc2ai ladder games http://sc2ai.net/ and on ai arena https://aiarena.net
         # The bot ID will stay the same each game so your bot can "adapt" to the opponent
         if not hasattr(self, "opponent_id"):
