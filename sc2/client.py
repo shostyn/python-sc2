@@ -5,6 +5,7 @@ from s2clientprotocol import debug_pb2 as debug_pb
 from s2clientprotocol import query_pb2 as query_pb
 from s2clientprotocol import raw_pb2 as raw_pb
 from s2clientprotocol import sc2api_pb2 as sc_pb
+from s2clientprotocol import common_pb2 as common_pb
 
 from .action import combine_actions
 from .data import ActionResult, ChatChannel, Race, Result, Status
@@ -45,7 +46,9 @@ class Client(Protocol):
         self._debug_spheres = []
 
         self._renderer = None
-        self.raw_affects_selection = False
+        self.raw_affects_selection = True
+        self.raw_crop_to_playable_area = True
+        self.minimap_crop_to_playable_area = True
 
     @property
     def in_game(self):
@@ -59,13 +62,20 @@ class Client(Protocol):
         portconfig=None,
         rgb_render_config=None,
     ):
+        minimap_size = common_pb.Size2DI(x=64, y=64)
+        camerasetup = sc_pb.SpatialCameraSetup(
+                minimap_resolution=minimap_size,
+                crop_to_playable_area=self.minimap_crop_to_playable_area,
+                allow_cheating_layers=True)
+
         ifopts = sc_pb.InterfaceOptions(
             raw=True,
             score=True,
+            feature_layer=camerasetup,
             show_cloaked=True,
             show_burrowed_shadows=True,
             raw_affects_selection=self.raw_affects_selection,
-            raw_crop_to_playable_area=False,
+            raw_crop_to_playable_area=self.raw_crop_to_playable_area,
             show_placeholders=True,
         )
 

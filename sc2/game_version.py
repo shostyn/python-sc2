@@ -9,6 +9,7 @@ from loguru import logger
 
 
 class GameVersion(IntEnum):
+    V_5_0_6 = 83830
     V_5_0_3 = 81433
     V_5_0_0 = 81009
     V_4_12_0 = 80188
@@ -38,8 +39,11 @@ class VersionManager:
             self.short_version = f"{splits[0]}.{splits[1]}.{splits[2]}"
 
         logger.info(f"Version: {self.full_version}")
-
-        if "5.0.5" in self.bot.game_info.map_name:
+        if "5.0.6" in self.bot.game_info.map_name:
+            logger.info("5.0.6 Balance mod recognized.")
+            self.base_version = GameVersion.V_5_0_6
+            return
+        elif "5.0.5" in self.bot.game_info.map_name:
             self.use_balance_505 = True
             logger.info("5.0.5 Balance mod recognized.")
             if self.base_version != GameVersion.V_4_10_0:

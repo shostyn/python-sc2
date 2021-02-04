@@ -374,7 +374,8 @@ class BotAI(DistanceCalculation):
                 point
                 for point in possible_points
                 # Check if point can be built on
-                if self._game_info.placement_grid[point.rounded] == 1
+                if self.in_map_bounds(point)
+                and self._game_info.placement_grid[point.floored] == 1
                 # Check if all resources have enough space to point
                 and all(
                     point.distance_to(resource)
