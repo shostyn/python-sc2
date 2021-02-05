@@ -62,8 +62,10 @@ class Client(Protocol):
         portconfig=None,
         rgb_render_config=None,
     ):
+        camera_size= common_pb.Size2DI(x=1, y=1)
         minimap_size = common_pb.Size2DI(x=64, y=64)
         camerasetup = sc_pb.SpatialCameraSetup(
+                resolution=camera_size,
                 minimap_resolution=minimap_size,
                 crop_to_playable_area=self.minimap_crop_to_playable_area,
                 allow_cheating_layers=True)
